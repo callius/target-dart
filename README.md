@@ -1,7 +1,7 @@
 # Target
 
 Target is a library for Functional Domain Modeling in Dart, the Dart implementation
-of [target-kt](https://target-kt.io), inspired by [arrow-kt](https://arrow-kt.io).
+of [target-kt](https://github.com/callius/target-kt), inspired by [arrow-kt](https://arrow-kt.io).
 
 Target aims to provide a set of tools for Dart to empower users to quickly write pure, functionally
 validated domain models. For this, it includes a set of atomic components: `ValueFailure`, `ValueObject`,
