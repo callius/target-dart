@@ -1,0 +1,19 @@
+name: target
+description: Functional domain modeling in Dart.
+version: 0.1.0
+publish_to: 'none'
+repository: https://github.com/callius/target-dart
+
+environment:
+  sdk: '>=2.19.6 <3.0.0'
+
+dependencies:
+  collection: ^1.17.1
+  dartz: ^0.10.1
+  equatable: ^2.0.5
+
+dev_dependencies:
+  build_runner: null
+  lints: ^2.0.1
+  mockito: ^5.4.0
+  test: ^1.24.1
