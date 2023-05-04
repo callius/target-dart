@@ -20,3 +20,5 @@ export 'src/value_validator/non_negative_int_validator.dart';
 export 'src/value_validator/positive_int_validator.dart';
 export 'src/value_validator/string_in_regex_validator.dart';
 export 'src/value_validator/string_in_value_objects_validator.dart';
+export 'src/value_validator/string_length_range_validator.dart';
+export 'src/value_validator/string_length_validator.dart';
