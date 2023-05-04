@@ -6,8 +6,7 @@ import 'package:target_annotation/target_annotation.dart';
   r'''
 // Generated code. Do not modify by hand.
 
-// ignore_for_file: unused_element, require_trailing_commas
-part of 'test_nullable_nested_model.dart';
+// ignore_for_file: require_trailing_commas, unused_element
 
 @freezed
 class Test with _$Test {
@@ -17,20 +16,18 @@ class Test with _$Test {
     required Test? parent,
   }) = _Test;
 
-  static Either<IValueFailure<dynamic>, Test> of({
+  static Either<ValueFailure<dynamic>, Test> of({
     required int id,
     required int field,
     required Test? parent,
   }) {
     return PositiveInt.of(id).fold(
       Left.new,
-      (vId) => PositiveInt.of(field).map(
-        (vField) => Test(
-          id: vId,
-          field: vField,
-          parent: parent,
-        ),
-      ),
+      (vId) => PositiveInt.of(field).map((vField) => Test(
+            id: vId,
+            field: vField,
+            parent: parent,
+          )),
     );
   }
 }
@@ -42,21 +39,19 @@ class TestParams with _$TestParams {
     required TestParams? parent,
   }) = _TestParams;
 
-  static Either<IValueFailure<dynamic>, TestParams> of({
+  static Either<ValueFailure<dynamic>, TestParams> of({
     required int field,
     required TestParams? parent,
   }) {
-    return PositiveInt.of(field).map(
-      (vField) => TestParams(
-        field: vField,
-        parent: parent,
-      ),
-    );
+    return PositiveInt.of(field).map((vField) => TestParams(
+          field: vField,
+          parent: parent,
+        ));
   }
 }
 
 @freezed
-class TestBuilder with _$TestBuilder implements IBuildable<TestParams> {
+class TestBuilder with _$TestBuilder implements Buildable<TestParams> {
   const factory TestBuilder({
     required Option<PositiveInt> field,
     required Option<TestBuilder?> parent,
@@ -74,42 +69,37 @@ class TestBuilder with _$TestBuilder implements IBuildable<TestParams> {
 
   const TestBuilder._();
 
-  static Either<IValueFailure<dynamic>, TestBuilder> of({
+  static Either<ValueFailure<dynamic>, TestBuilder> of({
     required Option<int> field,
     required Option<TestBuilder?> parent,
   }) {
-    return (PositiveInt.of.option(field)).map(
-      (vField) => TestBuilder(
-        field: vField,
-        parent: parent,
-      ),
-    );
+    return (PositiveInt.of.option(field)).map((vField) => TestBuilder(
+          field: vField,
+          parent: parent,
+        ));
   }
 
   @override
   Option<TestParams> build() {
-    return field.flatMap(
-      (vField) => (parent.flatMap<TestParams?>(
-        (vParent) {
+    return field.flatMap((vField) => (parent.flatMap<TestParams?>((vParent) {
           if (vParent == null) {
             return const Some(null);
           } else {
             return vParent.build();
           }
-        },
-      )).map(
-        (vParent) => TestParams(
-          field: vField,
-          parent: vParent,
-        ),
-      ),
-    );
+        })).map((vParent) => TestParams(
+              field: vField,
+              parent: vParent,
+            )));
   }
 }
 ''',
 )
 @ModelTemplate('Test')
 abstract class TestModel {
+  @extern
+  PositiveInt get id;
+
   PositiveInt get field;
 
   TestModel? get parent;

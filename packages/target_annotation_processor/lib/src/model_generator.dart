@@ -16,6 +16,7 @@ import 'package:target_annotation_processor/src/core/domain/model_property_type.
 import 'package:target_annotation_processor/src/core/generate_builder_spec.dart';
 import 'package:target_annotation_processor/src/core/generate_model_spec.dart';
 import 'package:target_annotation_processor/src/core/generate_params_spec.dart';
+import 'package:target_annotation_processor/src/core/references.dart';
 import 'package:target_annotation_processor/src/core/type_reference_extensions.dart';
 import 'package:target_extension/target_extension.dart';
 
@@ -66,12 +67,12 @@ class ModelGenerator extends GeneratorForAnnotation<ModelTemplate> {
 
     // Creating model properties.
     final modelProperties = _generateModelProperties(
-      properties,
-      modelTemplate.customId ? null : modelTemplate.idField,
+      properties: properties,
+      addFieldAnnotations: element.findAddFieldAnnotations(),
     );
 
     // Creating type references.
-    final failureReference = modelTemplate.failure.toTypeReference();
+    final failureReference = valueFailureRef(kDynamic);
     final modelReference = TypeReference(
       (it) => it..symbol = modelTemplate.name,
     );
@@ -91,7 +92,7 @@ class ModelGenerator extends GeneratorForAnnotation<ModelTemplate> {
       (it) => it
         ..comments.add('Generated code. Do not modify by hand.')
         ..ignoreForFile
-            .addAll(const ['unused_element', 'require_trailing_commas'])
+            .addAll(const ['require_trailing_commas', 'unused_element'])
         ..body.addAll([
           generateModelSpec(
             failureReference: failureReference,
@@ -113,17 +114,11 @@ class ModelGenerator extends GeneratorForAnnotation<ModelTemplate> {
     ).accept(_emitter).toString();
   }
 
-  List<ModelProperty> _generateModelProperties(
-    List<PropertyAccessorElement> properties,
-    AddFieldAnnotation? addFieldId,
-  ) {
+  List<ModelProperty> _generateModelProperties({
+    required Iterable<PropertyAccessorElement> properties,
+    required Iterable<AddFieldAnnotation> addFieldAnnotations,
+  }) {
     return [
-      if (addFieldId != null)
-        ModelProperty(
-          name: addFieldId.name,
-          type: _resolveModelPropertyType(addFieldId.type),
-          isExternal: addFieldId.ignore,
-        ),
       ...properties.map(
         (it) => ModelProperty(
           name: it.name,
@@ -133,6 +128,13 @@ class ModelGenerator extends GeneratorForAnnotation<ModelTemplate> {
               annotation.computeConstantValue()!.type!,
             ),
           ),
+        ),
+      ),
+      ...addFieldAnnotations.map(
+        (it) => ModelProperty(
+          name: it.name,
+          type: _resolveModelPropertyType(it.type),
+          isExternal: it.ignore,
         ),
       ),
     ];
@@ -220,5 +222,22 @@ extension on DartType {
             isNullable ?? nullabilitySuffix == NullabilitySuffix.question
         ..url = _nullWhenDartUrl(element?.source?.uri.toString()),
     );
+  }
+}
+
+extension on Element {
+  Iterable<AddFieldAnnotation> findAddFieldAnnotations() sync* {
+    yield* kAddFieldChecker
+        .annotationsOfExact(this)
+        .map(AddFieldAnnotation.ofObject);
+
+    final annotationElements = metadata.map((it) => it.element).whereNotNull();
+    for (final it in annotationElements) {
+      if (it is PropertyAccessorElement) {
+        yield* it.returnType.element!.findAddFieldAnnotations();
+      } else {
+        yield* it.findAddFieldAnnotations();
+      }
+    }
   }
 }

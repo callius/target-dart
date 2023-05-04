@@ -13,20 +13,20 @@ class Test with _$Test {
   const factory Test({
     required PositiveInt id,
     required PositiveInt field,
-    required Test? parent,
+    required DateTime created,
   }) = _Test;
 
   static Either<ValueFailure<dynamic>, Test> of({
     required int id,
     required int field,
-    required Test? parent,
+    required DateTime created,
   }) {
     return PositiveInt.of(id).fold(
       Left.new,
       (vId) => PositiveInt.of(field).map((vField) => Test(
             id: vId,
             field: vField,
-            parent: parent,
+            created: created,
           )),
     );
   }
@@ -65,13 +65,11 @@ class TestBuilder with _$TestBuilder implements Buildable<TestParams> {
 }
 ''',
 )
+@hasCreated
 @ModelTemplate('Test')
 abstract class TestModel {
   @extern
   PositiveInt get id;
 
   PositiveInt get field;
-
-  @extern
-  TestModel? get parent;
 }

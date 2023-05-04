@@ -11,3 +11,4 @@ const kOptionChecker = TypeChecker.fromRuntime(Option);
 const kBuildableChecker = TypeChecker.fromRuntime(Buildable);
 const kExternalTypeChecker = TypeChecker.fromRuntime(External);
 const kModelTemplateChecker = TypeChecker.fromRuntime(ModelTemplate);
+const kAddFieldChecker = TypeChecker.fromRuntime(AddField);

@@ -2,6 +2,7 @@ import 'package:code_builder/code_builder.dart';
 import 'package:target_annotation_processor/src/core/packages.dart';
 
 const kOverrideRef = Reference('override');
+const kDynamic = Reference('dynamic');
 const kLeftRef = Reference('Left', kDartzPackage);
 const kRightRef = Reference('Right', kDartzPackage);
 const kFreezedRef = Reference(
@@ -24,12 +25,21 @@ final kSomeRef = TypeReference(
     ..url = kDartzPackage,
 );
 
+TypeReference valueFailureRef(Reference of) {
+  return TypeReference(
+    (it) => it
+      ..symbol = 'ValueFailure'
+      ..types.add(of)
+      ..url = kTargetPackage,
+  );
+}
+
 TypeReference buildableRef(Reference of) {
   return TypeReference(
     (it) => it
       ..symbol = 'Buildable'
       ..types.add(of)
-      ..url = 'package:target/target.dart',
+      ..url = kTargetPackage,
   );
 }
 

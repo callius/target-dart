@@ -16,6 +16,7 @@ Future<void> main() async {
     return testDirectoryFile('test/source_gen_src', file);
   }
 
+  await testFile('test_created_model.dart');
   await testFile('test_nested_model.dart');
   await testFile('test_nullable_nested_model.dart');
   await testFile('test_nullable_nested_external_model.dart');
