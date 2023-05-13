@@ -152,7 +152,7 @@ class ModelGenerator extends GeneratorForAnnotation<ModelTemplate> {
 
     if (modelTemplate == null) {
       final typeElement = type.element;
-      if (typeElement is! ClassElement) {
+      if (typeElement is! InterfaceElement) {
         return _standardModelPropertyType(type, typeElement);
       } else {
         final valueObjectInterface = typeElement.allSupertypes.firstWhereOrNull(
