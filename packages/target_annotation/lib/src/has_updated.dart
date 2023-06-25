@@ -6,7 +6,7 @@ import 'package:target_annotation/src/add_field.dart';
 /// final DateTime updated;
 /// ```
 @AddField(name: 'updated', type: DateTime)
-class HasUpdated {
+final class HasUpdated {
   const HasUpdated();
 }
 

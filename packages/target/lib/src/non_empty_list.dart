@@ -5,7 +5,7 @@ typedef Nel<T> = NonEmptyList<T>;
 
 /// A list which contains at least one item.
 /// Loosely based on the ArrowKt implementation, optimized for Dart `const` constructors.
-class NonEmptyList<T> extends DelegatingIterable<T> {
+final class NonEmptyList<T> extends DelegatingIterable<T> {
   const NonEmptyList._(super.base);
 
   const NonEmptyList.fromListUnsafe(List<T> super.list);

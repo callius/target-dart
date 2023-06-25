@@ -113,21 +113,21 @@ Spec generateBuilderSpec({
 }
 
 TypeReference _toTypeReference(ModelPropertyType type) {
-  return type.map(
-    valueObject: (it) => it.type,
-    modelTemplate: (it) => it.type.appendBuilder(),
-    standard: (it) => (it.type.toBuilder()
-          ..types.addAll(it.typeArguments.map(_toTypeReference)))
+  return switch (type) {
+    final ValueObjectModelPropertyType type => type.type,
+    final ModelTemplateModelPropertyType type => type.type.appendBuilder(),
+    final StandardModelPropertyType type => (type.type.toBuilder()
+          ..types.addAll(type.typeArguments.map(_toTypeReference)))
         .build(),
-  );
+  };
 }
 
 TypeReference _toValueObjectTypeReference(ModelPropertyType type) {
-  return type.map(
-    valueObject: (it) => it.valueObjectType,
-    modelTemplate: (it) => it.type.appendBuilder(),
-    standard: (it) => (it.type.toBuilder()
-          ..types.addAll(it.typeArguments.map(_toValueObjectTypeReference)))
+  return switch (type) {
+    final ValueObjectModelPropertyType type => type.valueObjectType,
+    final ModelTemplateModelPropertyType type => type.type.appendBuilder(),
+    final StandardModelPropertyType type => (type.type.toBuilder()
+          ..types.addAll(type.typeArguments.map(_toValueObjectTypeReference)))
         .build(),
-  );
+  };
 }

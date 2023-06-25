@@ -1,5 +1,5 @@
 /// Marks a field as external, and will not be present on the params/builder.
-class External {
+final class External {
   const External();
 }
 

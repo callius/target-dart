@@ -2,7 +2,7 @@ import 'package:target/src/generic_value_object.dart';
 import 'package:target/src/value_object/positive_int.dart';
 import 'package:target/src/value_validator/non_negative_int_validator.dart';
 
-class NonNegativeInt extends GenericValueObject<int> {
+final class NonNegativeInt extends GenericValueObject<int> {
   static const of = NonNegativeIntValidator(NonNegativeInt._);
 
   const NonNegativeInt._(super.value);

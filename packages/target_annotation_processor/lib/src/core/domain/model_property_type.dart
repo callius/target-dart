@@ -1,11 +1,7 @@
 import 'package:code_builder/code_builder.dart';
-import 'package:collection/collection.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 
-part 'model_property_type.freezed.dart';
-
-@freezed
-class ModelPropertyType with _$ModelPropertyType {
+sealed class ModelPropertyType extends Equatable {
   const factory ModelPropertyType.valueObject({
     required TypeReference type,
     required TypeReference valueObjectType,
@@ -20,14 +16,56 @@ class ModelPropertyType with _$ModelPropertyType {
     required TypeReference type,
   }) = ModelTemplateModelPropertyType;
 
-  const ModelPropertyType._();
+  const ModelPropertyType();
+
+  abstract final TypeReference type;
 
   bool isValueObject() {
-    return map(
-      valueObject: (_) => true,
-      standard: (it) =>
-          it.typeArguments.firstOrNull is ValueObjectModelPropertyType,
-      modelTemplate: (_) => false,
-    );
+    return switch (this) {
+      final ValueObjectModelPropertyType _ => true,
+      final StandardModelPropertyType it =>
+        it.typeArguments.firstOrNull is ValueObjectModelPropertyType,
+      final ModelTemplateModelPropertyType _ => false,
+    };
   }
+}
+
+final class ValueObjectModelPropertyType extends ModelPropertyType {
+  @override
+  final TypeReference type;
+  final TypeReference valueObjectType;
+
+  const ValueObjectModelPropertyType({
+    required this.type,
+    required this.valueObjectType,
+  });
+
+  @override
+  List<Object> get props => [type, valueObjectType];
+}
+
+final class StandardModelPropertyType extends ModelPropertyType {
+  @override
+  final TypeReference type;
+  final List<ModelPropertyType> typeArguments;
+
+  const StandardModelPropertyType({
+    required this.type,
+    required this.typeArguments,
+  });
+
+  @override
+  List<Object> get props => [type, typeArguments];
+}
+
+final class ModelTemplateModelPropertyType extends ModelPropertyType {
+  @override
+  final TypeReference type;
+
+  const ModelTemplateModelPropertyType({
+    required this.type,
+  });
+
+  @override
+  List<Object> get props => [type];
 }

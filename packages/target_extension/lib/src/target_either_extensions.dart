@@ -87,3 +87,9 @@ extension TargetNullableTypeToEitherX<R> on R? {
     }
   }
 }
+
+extension TargetFutureEitherX<L, R> on Future<Either<L, R>> {
+  Future<Either<L2, R>> thenLeftMap<L2>(L2 Function(L l) f) {
+    return then((it) => it.leftMap(f));
+  }
+}

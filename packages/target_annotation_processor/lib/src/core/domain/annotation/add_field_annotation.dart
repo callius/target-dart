@@ -1,7 +1,7 @@
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/type.dart';
 
-class AddFieldAnnotation {
+final class AddFieldAnnotation {
   final String name;
   final DartType type;
   final bool ignore;
