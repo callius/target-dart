@@ -76,7 +76,7 @@ The included `EmailAddress` class is an example of an annotation processor compa
 
 ```dart
 /// A W3C HTML5 email address.
-class EmailAddress extends GenericValueObject<String> {
+final class EmailAddress extends GenericValueObject<String> {
   static const of = EmailAddressValidator(EmailAddress._);
 
   const EmailAddress._(super.value);
@@ -86,18 +86,19 @@ class EmailAddress extends GenericValueObject<String> {
 This value object can then be used to validate an email address like so:
 
 ```dart
-Either<UserCreateFailure, User> createUser(UserParamsDto params) {
-  return EmailAddress.of(params.emailAddress)
-      .leftMap(UserCreateFailure.invalidEmailAddress)
-      .flatMap(
-        (emailAddress) =>
+Future<Either<UserCreateFailure, User>> createUser(UserParamsDto params) {
+  return eitherAsync((r) {
+    final emailAddress = EmailAddress.of(params.emailAddress)
+        .leftMap(UserCreateFailure.invalidEmailAddress)
+        .let(r.bind);
+
     // ... validating other params ...
-    repositoryCreate(
+    return repositoryCreate(
       UserParams(
         emailAddress: emailAddress,
         // ... passing other validated params ...
       ),
-    ),
-  );
+    ).then(r.bind);
+  });
 }
 ```
