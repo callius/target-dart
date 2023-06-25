@@ -1,3 +1,3 @@
-abstract class ValueObject<T> {
+abstract interface class ValueObject<T> {
   abstract final T value;
 }
