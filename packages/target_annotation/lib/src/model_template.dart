@@ -1,5 +1,5 @@
 /// Marks an interface as a model template.
-class ModelTemplate {
+final class ModelTemplate {
   /// The base class name of the generated model from which the builder/params will be generated.
   final String name;
 

@@ -24,7 +24,7 @@
 /// final DateTime updated;
 /// final PositiveLong updatedBy;
 /// ```
-class AddField {
+final class AddField {
   /// The name of the generated field.
   final String name;
 
