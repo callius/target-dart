@@ -155,19 +155,20 @@ Expression zipOptionProperties(
 }
 
 Expression getOptionPropertyReceiver(ModelProperty property) {
-  return ((property.type as StandardModelPropertyType).typeArguments.first).map(
-    valueObject: (_) => Reference(property.name),
-    standard: (_) => Reference(property.name),
-    modelTemplate: (it) => parenthesized(
-      Reference(property.name).callFlatMap(
-        singleParameterLambda(
-          property.vName,
-          callBuild(Reference(property.vName), it.type.isNullable ?? false),
+  return switch (
+      (property.type as StandardModelPropertyType).typeArguments.first) {
+    final ValueObjectModelPropertyType _ => Reference(property.name),
+    final StandardModelPropertyType _ => Reference(property.name),
+    final ModelTemplateModelPropertyType type => parenthesized(
+        Reference(property.name).callFlatMap(
+          singleParameterLambda(
+            property.vName,
+            callBuild(Reference(property.vName), type.type.isNullable ?? false),
+          ),
+          type.type.appendParams(),
         ),
-        it.type.appendParams(),
       ),
-    ),
-  );
+  };
 }
 
 Expression vNameConstructorCall(
