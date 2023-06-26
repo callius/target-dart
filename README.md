@@ -15,7 +15,7 @@ included `build_runner` annotation processor.
 A `ValueFailure` is an interface representing a failure during value validation.
 
 ```dart
-abstract class ValueFailure<T> {
+abstract interface class ValueFailure<T> {
   abstract final T failedValue;
 }
 ```
@@ -28,7 +28,7 @@ must declare a static implementation of a value validator, `of`, when used in co
 processor package.
 
 ```dart
-abstract class ValueObject<T> {
+abstract interface class ValueObject<T> {
   abstract final T value;
 }
 ```
