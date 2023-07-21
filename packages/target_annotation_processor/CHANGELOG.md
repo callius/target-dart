@@ -1,3 +1,9 @@
+## 0.3.0
+
+Features:
+
+- Add arrow-kt nullable dsl in the form of `nullable()` and `nullableAsync()`.
+
 ## 0.2.0
 
 Features:
