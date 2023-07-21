@@ -24,7 +24,7 @@ A? nullable<A>(A Function(NullableRaise r) block) =>
 Future<A?> nullableAsync<A>(Future<A> Function(NullableRaise r) block) =>
     mergeAsync((r) => block(NullableRaise(r)));
 
-final class NullableRaise extends Raise<void> {
+final class NullableRaise implements Raise<void> {
   final Raise<void> _delegate;
 
   NullableRaise(this._delegate);

@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:target/src/raise_fold.dart';
 
 /// Implementation of arrow-kt raise dsl.
-abstract class Raise<Error> {
+abstract interface class Raise<Error> {
   Never raise(Error r);
 }
 

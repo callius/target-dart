@@ -56,7 +56,7 @@ Future<B> foldAsync<Error, A, B>(
   }
 }
 
-final class _DefaultRaise<Error> extends Raise<Error> {
+final class _DefaultRaise<Error> implements Raise<Error> {
   bool _isActive = true;
 
   bool complete() {
