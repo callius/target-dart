@@ -2,6 +2,8 @@ import 'package:code_builder/code_builder.dart';
 import 'package:equatable/equatable.dart';
 
 sealed class ModelPropertyType extends Equatable {
+  const ModelPropertyType();
+
   const factory ModelPropertyType.valueObject({
     required TypeReference type,
     required TypeReference valueObjectType,
@@ -15,8 +17,6 @@ sealed class ModelPropertyType extends Equatable {
   const factory ModelPropertyType.modelTemplate({
     required TypeReference type,
   }) = ModelTemplateModelPropertyType;
-
-  const ModelPropertyType();
 
   abstract final TypeReference type;
 

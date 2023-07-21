@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:target/src/raise.dart';
+import 'package:target/src/raise_builders.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -85,6 +86,92 @@ void main() {
       });
 
       expect(result, const Right<String, Unit>(unit));
+    });
+  });
+
+  group('NullableRaise.bind', () {
+    test('returns null when Left', () {
+      const testEither = Left('failure');
+
+      final result = nullable((r) {
+        return r.bind(testEither);
+      });
+
+      expect(result, isNull);
+    });
+
+    test('returns the value when Some', () {
+      const testEither = Right(unit);
+
+      final result = nullable((r) {
+        return r.bind(testEither);
+      });
+
+      expect(result, unit);
+    });
+  });
+
+  group('NullableRaise.bindOption', () {
+    test('returns null when None', () {
+      const testOption = None();
+
+      final result = nullable((r) {
+        return r.bindOption(testOption);
+      });
+
+      expect(result, isNull);
+    });
+
+    test('returns the value when Some', () {
+      const testOption = Some(unit);
+
+      final result = nullable((r) {
+        return r.bindOption(testOption);
+      });
+
+      expect(result, unit);
+    });
+  });
+
+  group('NullableRaise.ensure', () {
+    test('returns null when false', () {
+      final result = nullable((r) {
+        r.ensure(false);
+        return unit;
+      });
+
+      expect(result, isNull);
+    });
+
+    test('returns passes when true', () {
+      final result = nullable((r) {
+        r.ensure(true);
+        return unit;
+      });
+
+      expect(result, unit);
+    });
+  });
+
+  group('NullableRaise.ensureNotNull', () {
+    test('returns null when null', () {
+      const testValue = null;
+
+      final result = nullable((r) {
+        return r.ensureNotNull(testValue);
+      });
+
+      expect(result, isNull);
+    });
+
+    test('returns the value when not null', () {
+      const testValue = unit;
+
+      final result = nullable((r) {
+        return r.ensureNotNull(testValue);
+      });
+
+      expect(result, unit);
     });
   });
 }
