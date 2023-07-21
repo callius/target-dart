@@ -8,6 +8,8 @@ export 'src/length_range.dart';
 export 'src/modelable.dart';
 export 'src/non_empty_list.dart';
 export 'src/raise.dart';
+export 'src/raise_builders.dart';
+export 'src/raise_fold.dart';
 export 'src/value_failure.dart';
 export 'src/value_object.dart';
 export 'src/value_object/email_address.dart';

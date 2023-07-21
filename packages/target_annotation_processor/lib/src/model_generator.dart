@@ -192,7 +192,7 @@ class ModelGenerator extends GeneratorForAnnotation<ModelTemplate> {
     if (element is! TypeParameterizedElement) {
       return ModelPropertyType.standard(
         type: type.toTypeReference(),
-        typeArguments: [],
+        typeArguments: const [],
       );
     } else {
       return ModelPropertyType.standard(

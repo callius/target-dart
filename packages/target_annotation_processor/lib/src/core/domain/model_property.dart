@@ -20,7 +20,7 @@ final class ModelProperty extends Equatable {
     );
   }
 
-  ModelProperty._({
+  const ModelProperty._({
     required this.name,
     required this.vName,
     required this.type,
