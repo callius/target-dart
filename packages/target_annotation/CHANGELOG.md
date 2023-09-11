@@ -1,3 +1,9 @@
+## 0.4.1
+
+Fixes:
+
+- Pass `BuilderOptions` to `PartBuilder`.
+
 ## 0.4.0
 
 Features:
