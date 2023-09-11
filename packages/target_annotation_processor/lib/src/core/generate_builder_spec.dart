@@ -67,6 +67,7 @@ Spec generateBuilderSpec({
               builderReference,
               paramsProperties,
               checkVName: false,
+              isConst: paramsProperties.isEmpty,
             ).returned.statement,
         ),
         Constructor(
