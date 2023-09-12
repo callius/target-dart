@@ -124,17 +124,6 @@ Expression of(ModelProperty property) {
   }
 }
 
-Expression parenthesized(Expression delegate) {
-  // NOTE: ParenthesizedExpression is private, would have used it here instead.
-  return CodeExpression(
-    Block.of([
-      const Code('('),
-      delegate.code,
-      const Code(')'),
-    ]),
-  );
-}
-
 Expression zipOptionProperties(
   List<ModelProperty> properties,
   Expression next,
@@ -165,14 +154,13 @@ Expression getOptionPropertyReceiver(ModelProperty property) {
       (property.type as StandardModelPropertyType).typeArguments.first) {
     final ValueObjectModelPropertyType _ => Reference(property.name),
     final StandardModelPropertyType _ => Reference(property.name),
-    final ModelTemplateModelPropertyType type => parenthesized(
-        Reference(property.name).callFlatMap(
-          singleParameterLambda(
-            property.vName,
-            callBuild(Reference(property.vName), type.type.isNullable ?? false),
-          ),
-          type.type.appendParams(),
+    final ModelTemplateModelPropertyType type =>
+      Reference(property.name).callFlatMap(
+        singleParameterLambda(
+          property.vName,
+          callBuild(Reference(property.vName), type.type.isNullable ?? false),
         ),
+        type.type.appendParams(),
       ),
   };
 }
