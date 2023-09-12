@@ -1,6 +1,6 @@
 name: target
 description: Functional domain modeling in Dart.
-version: 0.4.1
+version: 0.4.2
 repository: https://github.com/callius/target-dart/tree/main/packages/target
 issue_tracker: https://github.com/callius/target-dart/issues
 homepage: https://github.com/callius/target-dart

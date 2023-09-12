@@ -1,3 +1,10 @@
+## 0.4.2
+
+Fixes:
+
+- Remove unnecessary parentheses.
+- Add `const` where applicable.
+
 ## 0.4.1
 
 Fixes:
