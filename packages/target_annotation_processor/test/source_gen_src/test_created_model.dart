@@ -54,7 +54,8 @@ class TestBuilder with _$TestBuilder implements Buildable<TestParams> {
 
   static Either<ValueFailure<dynamic>, TestBuilder> of(
       {required Option<int> field}) {
-    return (PositiveInt.of.option(field))
+    return PositiveInt.of
+        .option(field)
         .map((vField) => TestBuilder(field: vField));
   }
 

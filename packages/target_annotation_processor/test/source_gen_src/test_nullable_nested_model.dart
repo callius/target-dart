@@ -73,7 +73,7 @@ class TestBuilder with _$TestBuilder implements Buildable<TestParams> {
     required Option<int> field,
     required Option<TestBuilder?> parent,
   }) {
-    return (PositiveInt.of.option(field)).map((vField) => TestBuilder(
+    return PositiveInt.of.option(field).map((vField) => TestBuilder(
           field: vField,
           parent: parent,
         ));
@@ -81,13 +81,13 @@ class TestBuilder with _$TestBuilder implements Buildable<TestParams> {
 
   @override
   Option<TestParams> build() {
-    return field.flatMap((vField) => (parent.flatMap<TestParams?>((vParent) {
+    return field.flatMap((vField) => parent.flatMap<TestParams?>((vParent) {
           if (vParent == null) {
             return const Some(null);
           } else {
             return vParent.build();
           }
-        })).map((vParent) => TestParams(
+        }).map((vParent) => TestParams(
               field: vField,
               parent: vParent,
             )));

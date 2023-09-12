@@ -10,11 +10,18 @@ Expression ofAndZipConstructor(
   Reference failure,
   Reference model,
 ) {
-  return ofAndZip(
-    properties.where((prop) => prop.type.isValueObject()).toList(),
-    failure,
-    constructorCall(model, properties),
-  );
+  if (properties.isEmpty) {
+    return InvokeExpression.constOf(
+      kRightRef,
+      [constructorCall(model, const [])],
+    );
+  } else {
+    return ofAndZip(
+      properties.where((prop) => prop.type.isValueObject()).toList(),
+      failure,
+      constructorCall(model, properties),
+    );
+  }
 }
 
 Expression ofAndZip(
@@ -38,19 +45,24 @@ Expression constructorCall(
   Reference model,
   List<ModelProperty> properties, {
   bool checkVName = true,
+  bool isConst = false,
 }) {
-  return model.call(
-    [],
-    {
-      if (checkVName)
-        for (final prop in properties)
-          prop.name: Reference(
-            prop.type.isValueObject() ? prop.vName : prop.name,
-          )
-      else
-        for (final prop in properties) prop.name: Reference(prop.name),
-    },
-  );
+  if (isConst) {
+    return InvokeExpression.constOf(model, []);
+  } else {
+    return model.call(
+      [],
+      {
+        if (checkVName)
+          for (final prop in properties)
+            prop.name: Reference(
+              prop.type.isValueObject() ? prop.vName : prop.name,
+            )
+        else
+          for (final prop in properties) prop.name: Reference(prop.name),
+      },
+    );
+  }
 }
 
 Expression ofAndMap(ModelProperty property, Expression next) {
@@ -85,19 +97,15 @@ Expression of(ModelProperty property) {
       final nonNullableType =
           (valueObjectType.toBuilder()..isNullable = false).build();
 
-      return parenthesized(
-        nonNullableType
-            .property('of')
-            .property('nullableOption')
-            .call([Reference(property.name)]),
-      );
+      return nonNullableType
+          .property('of')
+          .property('nullableOption')
+          .call([Reference(property.name)]);
     } else {
-      return parenthesized(
-        valueObjectType
-            .property('of')
-            .property('option')
-            .call([Reference(property.name)]),
-      );
+      return valueObjectType
+          .property('of')
+          .property('option')
+          .call([Reference(property.name)]);
     }
   } else {
     final valueObjectType = property.type.type;
@@ -106,27 +114,14 @@ Expression of(ModelProperty property) {
       final nonNullableType =
           (valueObjectType.toBuilder()..isNullable = false).build();
 
-      return parenthesized(
-        nonNullableType
-            .property('of')
-            .property('nullable')
-            .call([Reference(property.name)]),
-      );
+      return nonNullableType
+          .property('of')
+          .property('nullable')
+          .call([Reference(property.name)]);
     } else {
       return valueObjectType.property('of').call([Reference(property.name)]);
     }
   }
-}
-
-Expression parenthesized(Expression delegate) {
-  // NOTE: ParenthesizedExpression is private, would have used it here instead.
-  return CodeExpression(
-    Block.of([
-      const Code('('),
-      delegate.code,
-      const Code(')'),
-    ]),
-  );
 }
 
 Expression zipOptionProperties(
@@ -134,7 +129,7 @@ Expression zipOptionProperties(
   Expression next,
 ) {
   if (properties.isEmpty) {
-    return kSomeRef.call([next]);
+    return InvokeExpression.constOf(kSomeRef, [next]);
   } else {
     final prop = properties.first;
     final receiver = getOptionPropertyReceiver(prop);
@@ -159,14 +154,13 @@ Expression getOptionPropertyReceiver(ModelProperty property) {
       (property.type as StandardModelPropertyType).typeArguments.first) {
     final ValueObjectModelPropertyType _ => Reference(property.name),
     final StandardModelPropertyType _ => Reference(property.name),
-    final ModelTemplateModelPropertyType type => parenthesized(
-        Reference(property.name).callFlatMap(
-          singleParameterLambda(
-            property.vName,
-            callBuild(Reference(property.vName), type.type.isNullable ?? false),
-          ),
-          type.type.appendParams(),
+    final ModelTemplateModelPropertyType type =>
+      Reference(property.name).callFlatMap(
+        singleParameterLambda(
+          property.vName,
+          callBuild(Reference(property.vName), type.type.isNullable ?? false),
         ),
+        type.type.appendParams(),
       ),
   };
 }
