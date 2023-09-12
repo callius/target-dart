@@ -10,11 +10,18 @@ Expression ofAndZipConstructor(
   Reference failure,
   Reference model,
 ) {
-  return ofAndZip(
-    properties.where((prop) => prop.type.isValueObject()).toList(),
-    failure,
-    constructorCall(model, properties),
-  );
+  if (properties.isEmpty) {
+    return InvokeExpression.constOf(
+      kRightRef,
+      [constructorCall(model, const [])],
+    );
+  } else {
+    return ofAndZip(
+      properties.where((prop) => prop.type.isValueObject()).toList(),
+      failure,
+      constructorCall(model, properties),
+    );
+  }
 }
 
 Expression ofAndZip(
@@ -23,7 +30,7 @@ Expression ofAndZip(
   Expression next,
 ) {
   if (properties.isEmpty) {
-    return InvokeExpression.constOf(kRightRef, [next]);
+    return kRightRef.call([next]);
   } else if (properties.length == 1) {
     return ofAndMap(properties.first, next);
   } else {
