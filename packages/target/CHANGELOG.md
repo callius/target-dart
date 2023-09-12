@@ -1,3 +1,9 @@
+## 0.4.3
+
+Fixes:
+
+- Downgrade `analyzer` dependency to 5.13.0.
+
 ## 0.4.2
 
 Fixes:
