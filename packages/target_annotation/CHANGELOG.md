@@ -1,3 +1,9 @@
+## 0.4.4
+
+Fixes:
+
+- Implement `GenericValueFailure` equality.
+
 ## 0.4.3
 
 Fixes:
