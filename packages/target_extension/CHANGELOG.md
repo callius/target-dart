@@ -1,3 +1,14 @@
+## 0.5.0
+
+Features:
+
+- Add `Either.mapAsync`.
+- Add `NonEmptyList.foldWithHead`.
+- Rename `Either.orNull` to `Either.getOrNull`.
+- Rename `Either.tap` to `Either.onRight`.
+- Rename `Either.tapLeft` to `Either.onLeft`.
+- Remove `NonEmptyList.fromList`.
+
 ## 0.4.4
 
 Fixes:
