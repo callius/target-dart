@@ -1,12 +1,24 @@
-import 'dart:async';
-
 import 'package:dartz/dartz.dart';
 import 'package:target_extension/src/target_effects.dart';
 
 extension TargetEitherX<L, R> on Either<L, R> {
+  /// Async [map] variant.
+  Future<Either<L, R2>> mapAsync<R2>(Future<R2> Function(R) f) {
+    return fold(
+      (it) => Future.value(Left(it)),
+      (it) => f(it).then(Right.new),
+    );
+  }
+
   /// Async [flatMap] variant.
   Future<Either<L, T>> flatMapAsync<T>(Future<Either<L, T>> Function(R) f) {
     return fold((l) => Future.value(Left(l)), f);
+  }
+
+  /// Performs the given side-[effect] if this is [Right] and returns this.
+  Either<L, R> onRight(DartzEffect<R> effect) {
+    ifRight(effect);
+    return this;
   }
 
   /// Performs the given side-[effect] if this is [Right].
@@ -16,22 +28,21 @@ extension TargetEitherX<L, R> on Either<L, R> {
     }
   }
 
-  /// Performs the given side-[effect] if this is [Right] and returns this.
-  Either<L, R> tap(DartzEffect<R> effect) {
-    ifRight(effect);
+  /// Performs the given side-[effect] if this is [Left] and returns this.
+  Either<L, R> onLeft(DartzEffect<L> effect) {
+    ifLeft(effect);
     return this;
   }
 
-  /// Performs the given side-[effect] if this is [Left] and returns this.
-  Either<L, R> tapLeft(DartzEffect<L> effect) {
+  /// Performs the given side-[effect] if this is [Left].
+  void ifLeft(DartzEffect<L> effect) {
     if (this is Left<L, R>) {
       effect((this as Left<L, R>).value);
     }
-    return this;
   }
 
-  /// Returns null if left, or the value of right.
-  R? orNull() => fold((_) => null, id);
+  /// Returns the unwrapped value [R] of [Right] or `null` if it is [Left].
+  R? getOrNull() => fold((_) => null, id);
 
   /// Applies the given function f if this is a Left, otherwise returns this if
   /// this is a Right. This is like flatMap for the exception.
@@ -45,9 +56,9 @@ extension TargetEitherX<L, R> on Either<L, R> {
   }
 
   /// Async version of [handleErrorWith].
-  FutureOr<Either<C, R>> handleErrorWithAsync<C>(
-    FutureOr<Either<C, R>> Function(L it) f,
-  ) {
+  Future<Either<C, R>> handleErrorWithAsync<C>(
+    Future<Either<C, R>> Function(L it) f,
+  ) async {
     return fold(f, Right.new);
   }
 }
