@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:target/src/raise.dart';
-import 'package:target/src/raise_builders.dart';
+import 'package:target/target.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -177,9 +176,10 @@ void main() {
 
   group('Either.bindTo', () {
     test('returns left when left', () async {
-      const testLeft = Left<String, Unit>('failure');
+      const testLeft =
+          Left<GenericValueFailure<Unit>, Unit>(GenericValueFailure(unit));
 
-      final result = either<String, Unit>((r) {
+      final result = either<ValueFailure<Unit>, Unit>((r) {
         testLeft.bindTo(r);
         return unit;
       });

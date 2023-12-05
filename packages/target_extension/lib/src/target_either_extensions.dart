@@ -104,8 +104,11 @@ extension TargetFutureEitherX<L, R> on Future<Either<L, R>> {
   Future<Either<L2, R>> thenLeftMap<L2>(L2 Function(L l) f) {
     return then((it) => it.leftMap(f));
   }
+}
 
-  Future<R> thenBind(Raise<L> r) {
+extension TargetFutureEitherBindX<Error, L extends Error, R>
+    on Future<Either<L, R>> {
+  Future<R> thenBind(Raise<Error> r) {
     return then(r.bind);
   }
 }
