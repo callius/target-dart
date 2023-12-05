@@ -174,4 +174,27 @@ void main() {
       expect(result, unit);
     });
   });
+
+  group('Either.bindTo', () {
+    test('returns left when left', () async {
+      const testLeft = Left<String, Unit>('failure');
+
+      final result = either<String, Unit>((r) {
+        testLeft.bindTo(r);
+        return unit;
+      });
+
+      expect(result, testLeft);
+    });
+
+    test('returns right when right', () {
+      const testRight = Right<String, Unit>(unit);
+
+      final result = either<String, Unit>((r) {
+        return testRight.bindTo(r);
+      });
+
+      expect(result, testRight);
+    });
+  });
 }

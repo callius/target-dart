@@ -6,12 +6,17 @@ issue_tracker: https://github.com/callius/target-dart/issues
 homepage: https://github.com/callius/target-dart
 
 environment:
-  sdk: '>=3.1.1 <4.0.0'
+  sdk: '>=3.2.0 <4.0.0'
 
 dependencies:
-  collection: ^1.17.1
+  collection: ^1.18.0
   dartz: ^0.10.1
+  target:
+    git:
+      url: https://github.com/callius/target-dart
+      path: packages/target
+      ref: v0.5.0
 
 dev_dependencies:
-  lint: ^2.1.2
+  lint: ^2.2.0
   test: null
