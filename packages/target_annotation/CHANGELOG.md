@@ -1,3 +1,11 @@
+## 0.6.0
+
+Features:
+
+- Upgrade to Dart 3.2.
+- Add `Either.bindTo`.
+- Add `Future<Either>.thenBind`.
+
 ## 0.5.0
 
 Features:
