@@ -1,3 +1,10 @@
+## 0.6.1
+
+Fixes:
+
+- Typing for `Either.bindTo`.
+- Typing for `Future<Either>.thenBind`.
+
 ## 0.6.0
 
 Features:

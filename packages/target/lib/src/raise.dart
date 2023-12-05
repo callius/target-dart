@@ -55,7 +55,8 @@ A merge<A>(A Function(Raise<A>) block) => recover(block, id);
 Future<A> mergeAsync<A>(Future<A> Function(Raise<A>) block) =>
     recoverAsync(block, id);
 
-extension RaiseEitherExtension<Error, A> on Either<Error, A> {
+extension RaiseEitherExtension<Error, Error2 extends Error, A>
+    on Either<Error2, A> {
   /// Binds this to the given [Raise].
   ///
   /// Note: [bind] member function already exists on [Either].

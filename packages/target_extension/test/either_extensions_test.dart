@@ -7,10 +7,12 @@ import 'package:test/scaffolding.dart';
 void main() {
   group('Future<Either>.thenBind', () {
     test('returns left when left', () async {
-      const testLeft = Left<String, Unit>('f');
+      const testLeft =
+          Left<GenericValueFailure<Unit>, Unit>(GenericValueFailure(unit));
 
-      final result = await eitherAsync<String, Unit>(
-        (r) => Future<Either<String, Unit>>.value(testLeft).thenBind(r),
+      final result = await eitherAsync<ValueFailure<Unit>, Unit>(
+        (r) => Future<Either<GenericValueFailure<Unit>, Unit>>.value(testLeft)
+            .thenBind(r),
       );
 
       expect(result, testLeft);
