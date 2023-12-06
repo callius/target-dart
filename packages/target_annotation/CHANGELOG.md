@@ -1,3 +1,9 @@
+## 0.7.0
+
+Features:
+
+- Upgrade `analyzer` dependency to 6.3.0.
+
 ## 0.6.1
 
 Fixes:
