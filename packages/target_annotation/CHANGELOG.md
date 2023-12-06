@@ -1,3 +1,9 @@
+## 0.7.1
+
+Fixes:
+
+- Downgrade `analyzer` dependency to 6.2.0.
+
 ## 0.7.0
 
 Features:
