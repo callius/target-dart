@@ -13,5 +13,5 @@ dependencies:
   dartz: ^0.10.1
 
 dev_dependencies:
-  lint: ^2.2.0
+  lint: ^2.3.0
   test: null

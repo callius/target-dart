@@ -14,5 +14,5 @@ dependencies:
   equatable: ^2.0.5
 
 dev_dependencies:
-  lint: ^2.2.0
+  lint: ^2.3.0
   test: null
