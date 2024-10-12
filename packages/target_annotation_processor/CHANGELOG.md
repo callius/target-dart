@@ -1,3 +1,9 @@
+## 0.8.1
+
+Fixes:
+
+- Nested model typing.
+
 ## 0.8.0
 
 #### Breaking Changes:
