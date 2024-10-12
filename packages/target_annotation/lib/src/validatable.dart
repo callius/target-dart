@@ -6,6 +6,7 @@
 ///
 /// ```dart
 /// @freezed
+/// @validatable
 /// class Model with _$Model {
 ///   const factory Model({
 ///     required Field1 field1,
@@ -40,7 +41,7 @@
 /// }
 ///
 /// final class ModelFieldFailureField1
-///   extends ModelFieldFailure<Field1Failure> {
+///     extends ModelFieldFailure<Field1Failure> {
 ///   const ModelFieldFailureField1(super.parent);
 /// }
 /// ```
