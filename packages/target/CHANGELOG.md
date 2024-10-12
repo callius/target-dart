@@ -1,3 +1,43 @@
+## 0.8.0
+
+#### Breaking Changes:
+
+- New `target_annotation_processor` paradigm centered around the `Validatable` annotation.
+  - Removed dependency on `freezed`.
+  - Validation function, named `_$of`, is generated based on unnamed constructor arguments.
+
+Before:
+
+```dart
+@ModelTemplate("Some")
+abstract class SomeModel {
+  // ...fields...
+}
+```
+
+After:
+
+```dart
+@validatable
+class Some {
+  const Some(/* fields */);
+  
+  static const of = _$of;
+}
+```
+
+Freezed data classes still work:
+
+```dart
+@freezed
+@validatable
+class Some with _$Some {
+  const factory Some(/* fields */) = _Some;
+  
+  static const of = _$of;
+}
+```
+
 ## 0.7.1
 
 Fixes:
