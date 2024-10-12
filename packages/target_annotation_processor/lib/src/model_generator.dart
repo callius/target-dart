@@ -13,6 +13,7 @@ import 'package:target_annotation_processor/src/core/domain/model_property.dart'
 import 'package:target_annotation_processor/src/core/domain/model_property_type.dart';
 import 'package:target_annotation_processor/src/core/generate_field_failure_specs.dart';
 import 'package:target_annotation_processor/src/core/generate_of_spec.dart';
+import 'package:target_annotation_processor/src/core/references.dart';
 import 'package:target_extension/target_extension.dart';
 
 final _emitter = DartEmitter(
@@ -112,46 +113,152 @@ class ModelGenerator extends GeneratorForAnnotation<Validatable> {
     ParameterElement parameter,
   ) {
     final type = parameter.type;
-    final modelTemplate = type.element?.metadata.firstWhereOrNull(
-      (it) =>
-          it
-              .computeConstantValue()
-              ?.type
-              ?.let(kValidatableChecker.isExactlyType) ==
-          true,
-    );
-    if (modelTemplate != null) {
-      final typeReference = type.toTypeReference();
-      return ModelPropertyType.modelTemplate(
-        type: typeReference,
-        parentFieldFailureType: TypeReference(
-          (it) => it
-            ..symbol = type.element!.name!.appendFieldFailure()
-            ..url = typeReference.url,
+    if (type is! InterfaceType) {
+      return _standardModelPropertyType(type);
+    }
+
+    // Finding option parameters.
+    final typeElement = type.element;
+    if (typeElement.name == kOptionRef.symbol) {
+      final optionValueType = type.typeArguments.first;
+      if (optionValueType is InterfaceType) {
+        final optionValueTypeElement = optionValueType.element;
+        // Finding model template option.
+        if (optionValueType.element.metadata.containsValidatable()) {
+          return _resolveValidatableProperties(
+            failureReference: failureReference,
+            parameter: parameter,
+            modelType: optionValueType,
+            resolve: (
+              modelTypeReference,
+              parentFieldFailureType,
+              fieldFailureType,
+            ) =>
+                ModelPropertyType.modelTemplateOption(
+              type: type.toTypeReference(),
+              modelType: modelTypeReference,
+              parentFieldFailureType: parentFieldFailureType,
+              fieldFailureType: fieldFailureType,
+            ),
+          );
+        }
+
+        // Finding value object type option.
+        final valueObjectInterfaceType =
+            optionValueTypeElement.allSupertypes.findValueObject();
+        if (valueObjectInterfaceType != null) {
+          return _resolveValueObjectProperties(
+            failureReference: failureReference,
+            parameter: parameter,
+            valueObjectType: optionValueType,
+            valueObjectElement: optionValueTypeElement,
+            valueObjectInterfaceType: valueObjectInterfaceType,
+            resolve: (
+              valueObjectType,
+              valueObjectValueType,
+              valueFailureType,
+              fieldFailureType,
+            ) =>
+                ModelPropertyType.valueObjectOption(
+              type: type.toTypeReference(),
+              valueObjectType: valueObjectType,
+              valueObjectValueType: valueObjectValueType,
+              valueFailureType: valueFailureType,
+              fieldFailureType: fieldFailureType,
+            ),
+          );
+        }
+      }
+    }
+
+    final isValidatable = typeElement.metadata.containsValidatable();
+    if (isValidatable) {
+      return _resolveValidatableProperties(
+        failureReference: failureReference,
+        parameter: parameter,
+        modelType: type,
+        resolve: (
+          modelTypeReference,
+          parentFieldFailureType,
+          fieldFailureType,
+        ) =>
+            ModelPropertyType.modelTemplate(
+          type: modelTypeReference,
+          parentFieldFailureType: parentFieldFailureType,
+          fieldFailureType: fieldFailureType,
         ),
-        fieldFailureType: _getFieldFailureType(failureReference, parameter),
       );
     }
 
-    final typeElement = type.element;
-    if (typeElement is! InterfaceElement) {
-      return _standardModelPropertyType(type);
-    }
-
     // Finding the value object interface.
-    final valueObjectInterface = typeElement.allSupertypes.firstWhereOrNull(
-      (it) => kValueObjectChecker.isExactly(it.element),
-    );
-    if (valueObjectInterface == null) {
-      return _standardModelPropertyType(type);
+    final valueObjectInterfaceType =
+        typeElement.allSupertypes.findValueObject();
+    if (valueObjectInterfaceType != null) {
+      return _resolveValueObjectProperties(
+        failureReference: failureReference,
+        parameter: parameter,
+        valueObjectType: type,
+        valueObjectElement: typeElement,
+        valueObjectInterfaceType: valueObjectInterfaceType,
+        resolve: (
+          valueObjectType,
+          valueObjectValueType,
+          valueFailureType,
+          fieldFailureType,
+        ) =>
+            ModelPropertyType.valueObject(
+          type: valueObjectType,
+          valueObjectValueType: valueObjectValueType,
+          valueFailureType: valueFailureType,
+          fieldFailureType: fieldFailureType,
+        ),
+      );
     }
 
+    return _standardModelPropertyType(type);
+  }
+
+  ModelPropertyType _resolveValidatableProperties({
+    required Reference failureReference,
+    required ParameterElement parameter,
+    required DartType modelType,
+    required ModelPropertyType Function(
+      TypeReference modelTypeReference,
+      TypeReference parentFieldFailureType,
+      TypeReference fieldFailureType,
+    ) resolve,
+  }) {
+    final modelTypeReference = modelType.toTypeReference();
+    return resolve(
+      modelTypeReference,
+      TypeReference(
+        (it) => it
+          ..symbol = modelType.element!.name!.appendFieldFailure()
+          ..url = modelTypeReference.url,
+      ),
+      _getFieldFailureType(failureReference, parameter),
+    );
+  }
+
+  ModelPropertyType _resolveValueObjectProperties({
+    required Reference failureReference,
+    required ParameterElement parameter,
+    required DartType valueObjectType,
+    required InterfaceElement valueObjectElement,
+    required InterfaceType valueObjectInterfaceType,
+    required ModelPropertyType Function(
+      TypeReference valueObjectType,
+      TypeReference valueObjectValueType,
+      TypeReference valueFailureType,
+      TypeReference fieldFailureType,
+    ) resolve,
+  }) {
     // Finding the value validator field.
-    final valueValidatorField = typeElement.children.firstWhereOrNull(
+    final valueValidatorField = valueObjectElement.children.firstWhereOrNull(
       (it) => it.name == 'of' && it is FieldElement && it.isStatic,
     ) as FieldElement?;
     if (valueValidatorField == null) {
-      final displayName = typeElement.displayName;
+      final displayName = valueObjectElement.displayName;
       throw InvalidGenerationSourceError(
         '`$displayName` must declare a value validator in a static field `of`.',
         todo: 'Add a static value validator, named `of`, to `$displayName`.',
@@ -166,32 +273,23 @@ class ModelGenerator extends GeneratorForAnnotation<Validatable> {
             .typeArguments[1]
             .toTypeReference();
 
-    final valueObjectTypeArgument = valueObjectInterface.typeArguments.first;
-    return ModelPropertyType.valueObject(
-      type: type.toTypeReference(),
-      valueObjectValueType: valueObjectTypeArgument.toTypeReference(
-        isNullable: type.nullabilitySuffix == NullabilitySuffix.question,
+    final valueObjectTypeArgument =
+        valueObjectInterfaceType.typeArguments.first;
+    return resolve(
+      valueObjectType.toTypeReference(),
+      valueObjectTypeArgument.toTypeReference(
+        isNullable:
+            valueObjectType.nullabilitySuffix == NullabilitySuffix.question,
       ),
-      valueFailureType: valueFailureType,
-      fieldFailureType: _getFieldFailureType(failureReference, parameter),
+      valueFailureType,
+      _getFieldFailureType(failureReference, parameter),
     );
   }
 
   ModelPropertyType _standardModelPropertyType(DartType type) {
-    final element = type.element;
-    if (element is! TypeParameterizedElement) {
-      return ModelPropertyType.standard(
-        type: type.toTypeReference(),
-        typeArguments: const [],
-      );
-    } else {
-      return ModelPropertyType.standard(
-        type: type.toTypeReference(),
-        typeArguments: element.typeParameters
-            .map((param) => _standardModelPropertyType(param.bound!))
-            .toList(),
-      );
-    }
+    return ModelPropertyType.standard(
+      type: type.toTypeReference(),
+    );
   }
 
   TypeReference _getFieldFailureType(
@@ -240,5 +338,26 @@ extension on String {
     } else {
       return this;
     }
+  }
+}
+
+extension on List<ElementAnnotation> {
+  bool containsValidatable() {
+    return any(
+      (it) =>
+          it
+              .computeConstantValue()
+              ?.type
+              ?.let(kValidatableChecker.isExactlyType) ==
+          true,
+    );
+  }
+}
+
+extension on List<InterfaceType> {
+  InterfaceType? findValueObject() {
+    return firstWhereOrNull(
+      (it) => kValueObjectChecker.isExactly(it.element),
+    );
   }
 }

@@ -55,6 +55,7 @@ Code _validateModelProperties({
               declareFinal(property.vName)
                   .assign(
                     propertyType.type
+                        .toNonNull()
                         .property('of')
                         .property('nullable')
                         .call([Reference(property.name)]),
@@ -79,7 +80,8 @@ Code _validateModelProperties({
             list.add(
               declareFinal(property.vName)
                   .assign(
-                    propertyType.type
+                    propertyType.valueObjectType
+                        .toNonNull()
                         .property('of')
                         .property('nullableOption')
                         .call([Reference(property.name)]),
@@ -90,7 +92,7 @@ Code _validateModelProperties({
             list.add(
               declareFinal(property.vName)
                   .assign(
-                    propertyType.type
+                    propertyType.valueObjectType
                         .property('of')
                         .property('option')
                         .call([Reference(property.name)]),
@@ -268,9 +270,7 @@ TypeReference _toValueObjectTypeReference(ModelPropertyType type) {
           type.modelType.toNonNull(),
         ).withNullability(type.modelType.isNullable),
       ),
-    StandardModelPropertyType() => (type.type.toBuilder()
-          ..types.addAll(type.typeArguments.map(_toValueObjectTypeReference)))
-        .build(),
+    StandardModelPropertyType() => type.type,
   };
 }
 

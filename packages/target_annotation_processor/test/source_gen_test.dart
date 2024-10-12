@@ -17,5 +17,10 @@ Future<void> main() async {
   }
 
   await testFile('test_nested_model.dart');
+  await testFile('test_nested_model_option.dart');
+  await testFile('test_nested_model_with_nullable_field.dart');
+  await testFile('test_nested_model_with_nullable_option_field.dart');
+  await testFile('test_nested_model_with_option_field.dart');
   await testFile('test_nullable_nested_model.dart');
+  await testFile('test_nullable_nested_model_option.dart');
 }

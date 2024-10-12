@@ -22,7 +22,6 @@ sealed class ModelPropertyType extends Equatable {
 
   const factory ModelPropertyType.standard({
     required TypeReference type,
-    required List<ModelPropertyType> typeArguments,
   }) = StandardModelPropertyType;
 
   const factory ModelPropertyType.modelTemplate({
@@ -121,15 +120,13 @@ final class ValueObjectOptionModelPropertyType extends ModelPropertyType
 final class StandardModelPropertyType extends ModelPropertyType {
   @override
   final TypeReference type;
-  final List<ModelPropertyType> typeArguments;
 
   const StandardModelPropertyType({
     required this.type,
-    required this.typeArguments,
   });
 
   @override
-  List<Object> get props => [type, typeArguments];
+  List<Object> get props => [type];
 }
 
 final class ModelTemplateModelPropertyType extends ModelPropertyType
