@@ -60,7 +60,7 @@ final class ModelFieldFailureParent
 }
 ''',
 )
-@Validatable()
+@validatable
 final class Model {
   final PositiveInt id;
   final PositiveInt field;

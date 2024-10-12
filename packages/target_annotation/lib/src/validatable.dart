@@ -47,3 +47,5 @@
 final class Validatable {
   const Validatable();
 }
+
+const validatable = Validatable();
