@@ -10,28 +10,27 @@ import 'package:target_annotation/target_annotation.dart';
 
 Either<Nel<ModelFieldFailure>, Model> _$of({
   required int id,
-  required int field,
-  required Either<Nel<ModelFieldFailure>, Model>? parent,
+  required int? field,
+  required Either<Nel<ModelFieldFailure>, Model> parent,
 }) {
   final vId = PositiveInt.of(id);
-  final vField = PositiveInt.of(field);
-  final vParent = parent ?? const Right(null);
+  final vField = PositiveInt.of.nullable(field);
   if (vId is Right<GenericValueFailure<int>, PositiveInt> &&
-      vField is Right<GenericValueFailure<int>, PositiveInt> &&
-      vParent is Right<Nel<ModelFieldFailure>, Model?>) {
+      vField is Right<GenericValueFailure<int>, PositiveInt?> &&
+      parent is Right<Nel<ModelFieldFailure>, Model>) {
     return Right(Model(
       id: vId.value,
       field: vField.value,
-      parent: vParent.value,
+      parent: parent.value,
     ));
   } else {
     return Left(Nel.fromListUnsafe([
       if (vId is Left<GenericValueFailure<int>, PositiveInt>)
         ModelFieldFailureId(vId.value),
-      if (vField is Left<GenericValueFailure<int>, PositiveInt>)
+      if (vField is Left<GenericValueFailure<int>, PositiveInt?>)
         ModelFieldFailureField(vField.value),
-      if (vParent is Left<Nel<ModelFieldFailure>, Model?>)
-        ModelFieldFailureParent(vParent.value),
+      if (parent is Left<Nel<ModelFieldFailure>, Model>)
+        ModelFieldFailureParent(parent.value),
     ]));
   }
 }
@@ -64,8 +63,8 @@ final class ModelFieldFailureParent
 @Validatable()
 final class Model {
   final PositiveInt id;
-  final PositiveInt field;
-  final Model? parent;
+  final PositiveInt? field;
+  final Model parent;
 
   const Model({required this.id, required this.field, required this.parent});
 }

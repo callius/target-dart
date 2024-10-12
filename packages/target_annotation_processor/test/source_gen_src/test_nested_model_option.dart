@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:source_gen_test/source_gen_test.dart';
 import 'package:target/target.dart';
 import 'package:target_annotation/target_annotation.dart';
@@ -11,14 +12,17 @@ import 'package:target_annotation/target_annotation.dart';
 Either<Nel<ModelFieldFailure>, Model> _$of({
   required int id,
   required int field,
-  required Either<Nel<ModelFieldFailure>, Model>? parent,
+  required Option<Either<Nel<ModelFieldFailure>, Model>> parent,
 }) {
   final vId = PositiveInt.of(id);
   final vField = PositiveInt.of(field);
-  final vParent = parent ?? const Right(null);
+  final vParent = parent.fold(
+    () => const Right(None()),
+    (_r) => _r.map(Some.new),
+  );
   if (vId is Right<GenericValueFailure<int>, PositiveInt> &&
       vField is Right<GenericValueFailure<int>, PositiveInt> &&
-      vParent is Right<Nel<ModelFieldFailure>, Model?>) {
+      vParent is Right<Nel<ModelFieldFailure>, Option<Model>>) {
     return Right(Model(
       id: vId.value,
       field: vField.value,
@@ -30,7 +34,7 @@ Either<Nel<ModelFieldFailure>, Model> _$of({
         ModelFieldFailureId(vId.value),
       if (vField is Left<GenericValueFailure<int>, PositiveInt>)
         ModelFieldFailureField(vField.value),
-      if (vParent is Left<Nel<ModelFieldFailure>, Model?>)
+      if (vParent is Left<Nel<ModelFieldFailure>, Option<Model>>)
         ModelFieldFailureParent(vParent.value),
     ]));
   }
@@ -65,7 +69,7 @@ final class ModelFieldFailureParent
 final class Model {
   final PositiveInt id;
   final PositiveInt field;
-  final Model? parent;
+  final Option<Model> parent;
 
   const Model({required this.id, required this.field, required this.parent});
 }
