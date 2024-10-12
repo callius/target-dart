@@ -107,7 +107,15 @@ Code _validateModelProperties({
           // Validating nullable model property.
           if (propertyType.type.isNullable == true) {
             list.add(
-              declareFinal(property.vName)
+              declareFinal(
+                property.vName,
+                type: _flattenSymbol(
+                  eitherRef(
+                    propertyType.getLeftType(),
+                    propertyType.getRightType(),
+                  ),
+                ),
+              )
                   .assign(
                     Reference(property.name).ifNullThen(
                       const InvokeExpression.constOf(
@@ -126,7 +134,15 @@ Code _validateModelProperties({
           // Validating optional model property.
           if (propertyType.modelType.isNullable == true) {
             list.add(
-              declareFinal(property.vName)
+              declareFinal(
+                property.vName,
+                type: _flattenSymbol(
+                  eitherRef(
+                    propertyType.getLeftType(),
+                    propertyType.getRightType(),
+                  ),
+                ),
+              )
                   .assign(
                     Reference(property.name).property('fold').call([
                       noParameterLambda(
@@ -154,7 +170,15 @@ Code _validateModelProperties({
             );
           } else {
             list.add(
-              declareFinal(property.vName)
+              declareFinal(
+                property.vName,
+                type: _flattenSymbol(
+                  eitherRef(
+                    propertyType.getLeftType(),
+                    propertyType.getRightType(),
+                  ),
+                ),
+              )
                   .assign(
                     Reference(property.name).property('fold').call([
                       noParameterLambda(
@@ -281,5 +305,38 @@ extension on TypeReference {
 
   TypeReference toNonNull() {
     return (toBuilder()..isNullable = false).build();
+  }
+}
+
+/// Returns a typed either symbol. [declareFinal] is not working as expected.
+///
+/// TODO: Remove once [the issue](https://github.com/dart-lang/code_builder/issues/315) is resolved.
+TypeReference _flattenSymbol(TypeReference it) {
+  return (it.toBuilder()..symbol = _getParameterizedSymbol(it)).build();
+}
+
+String _getParameterizedSymbol(Reference ref) {
+  final sb = StringBuffer(ref.symbol!);
+  switch (ref) {
+    case TypeReference():
+      final parameters = ref.types;
+      if (parameters.isEmpty) {
+        if (ref.isNullable == true) {
+          sb.write('?');
+        }
+        return sb.toString();
+      } else {
+        final parameterSymbols =
+            parameters.map((it) => _getParameterizedSymbol(it)).join(',');
+        sb.write('<');
+        sb.write(parameterSymbols);
+        sb.write('>');
+        if (ref.isNullable == true) {
+          sb.write('?');
+        }
+        return sb.toString();
+      }
+    default:
+      return sb.toString();
   }
 }
