@@ -15,7 +15,8 @@ Either<Nel<ModelFieldFailure>, Model> _$of({
 }) {
   final vId = PositiveInt.of(id);
   final vField = PositiveInt.of(field);
-  final vParent = parent ?? const Right(null);
+  final Either<Nel<ModelFieldFailure>, Model?> vParent =
+      parent ?? const Right(null);
   if (vId is Right<GenericValueFailure<int>, PositiveInt> &&
       vField is Right<GenericValueFailure<int>, PositiveInt> &&
       vParent is Right<Nel<ModelFieldFailure>, Model?>) {

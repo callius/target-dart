@@ -16,7 +16,7 @@ Either<Nel<ModelFieldFailure>, Model> _$of({
 }) {
   final vId = PositiveInt.of(id);
   final vField = PositiveInt.of(field);
-  final vParent = parent.fold(
+  final Either<Nel<ModelFieldFailure>, Option<Model?>> vParent = parent.fold(
     () => const Right(None()),
     (_r) => _r?.map(Some.new) ?? const Right(Some(null)),
   );
