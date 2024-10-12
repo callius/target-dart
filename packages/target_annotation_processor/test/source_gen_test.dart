@@ -6,7 +6,7 @@ Future<void> main() async {
   initializeBuildLogTracking();
 
   Future<void> testDirectoryFile(String directory, String file) async {
-    testAnnotatedElements<ModelTemplate>(
+    testAnnotatedElements<Validatable>(
       await initializeLibraryReaderForDirectory(directory, file),
       ModelGenerator(),
     );
@@ -16,8 +16,6 @@ Future<void> main() async {
     return testDirectoryFile('test/source_gen_src', file);
   }
 
-  await testFile('test_created_model.dart');
   await testFile('test_nested_model.dart');
   await testFile('test_nullable_nested_model.dart');
-  await testFile('test_nullable_nested_external_model.dart');
 }

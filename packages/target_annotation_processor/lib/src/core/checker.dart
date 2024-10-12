@@ -6,7 +6,4 @@ import 'package:target_annotation/target_annotation.dart';
 const kValueObjectChecker = TypeChecker.fromRuntime(ValueObject);
 const kValidatorChecker = TypeChecker.fromRuntime(ValueValidator);
 const kOptionChecker = TypeChecker.fromRuntime(Option);
-const kBuildableChecker = TypeChecker.fromRuntime(Buildable);
-const kExternalTypeChecker = TypeChecker.fromRuntime(External);
-const kModelTemplateChecker = TypeChecker.fromRuntime(ModelTemplate);
-const kAddFieldChecker = TypeChecker.fromRuntime(AddField);
+const kValidatableChecker = TypeChecker.fromRuntime(Validatable);

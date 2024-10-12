@@ -7,3 +7,4 @@ export 'src/has_created.dart';
 export 'src/has_created_and_updated.dart';
 export 'src/has_updated.dart';
 export 'src/model_template.dart';
+export 'src/validatable.dart';

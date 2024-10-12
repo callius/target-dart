@@ -8,95 +8,63 @@ import 'package:target_annotation/target_annotation.dart';
 
 // ignore_for_file: require_trailing_commas, unused_element
 
-@freezed
-class Test with _$Test {
-  const factory Test({
-    required PositiveInt id,
-    required PositiveInt field,
-    required Test parent,
-  }) = _Test;
-
-  static Either<ValueFailure<dynamic>, Test> of({
-    required int id,
-    required int field,
-    required Test parent,
-  }) {
-    return PositiveInt.of(id).fold(
-      Left.new,
-      (vId) => PositiveInt.of(field).map((vField) => Test(
-            id: vId,
-            field: vField,
-            parent: parent,
-          )),
-    );
+Either<Nel<ModelFieldFailure>, Model> _$of({
+  required int id,
+  required int field,
+  required Either<Nel<ModelFieldFailure>, Model> parent,
+}) {
+  final vId = PositiveInt.of(id);
+  final vField = PositiveInt.of(field);
+  if (vId is Right<GenericValueFailure<int>, PositiveInt> &&
+      vField is Right<GenericValueFailure<int>, PositiveInt> &&
+      parent is Right<Nel<ModelFieldFailure>, Model>) {
+    return Right(Model(
+      id: vId.value,
+      field: vField.value,
+      parent: parent.value,
+    ));
+  } else {
+    return Left(Nel.fromListUnsafe([
+      if (vId is Left<GenericValueFailure<int>, PositiveInt>)
+        ModelFieldFailureId(vId.value),
+      if (vField is Left<GenericValueFailure<int>, PositiveInt>)
+        ModelFieldFailureField(vField.value),
+      if (parent is Left<Nel<ModelFieldFailure>, Model>)
+        ModelFieldFailureParent(parent.value),
+    ]));
   }
 }
 
-@freezed
-class TestParams with _$TestParams {
-  const factory TestParams({
-    required PositiveInt field,
-    required TestParams parent,
-  }) = _TestParams;
+sealed class ModelFieldFailure<T> extends Equatable {
+  const ModelFieldFailure(this.parent);
 
-  static Either<ValueFailure<dynamic>, TestParams> of({
-    required int field,
-    required TestParams parent,
-  }) {
-    return PositiveInt.of(field).map((vField) => TestParams(
-          field: vField,
-          parent: parent,
-        ));
-  }
-}
-
-@freezed
-class TestBuilder with _$TestBuilder implements Buildable<TestParams> {
-  const factory TestBuilder({
-    required Option<PositiveInt> field,
-    required Option<TestBuilder> parent,
-  }) = _TestBuilder;
-
-  factory TestBuilder.only({
-    Option<PositiveInt> field = const None(),
-    Option<TestBuilder> parent = const None(),
-  }) {
-    return TestBuilder(
-      field: field,
-      parent: parent,
-    );
-  }
-
-  const TestBuilder._();
-
-  static Either<ValueFailure<dynamic>, TestBuilder> of({
-    required Option<int> field,
-    required Option<TestBuilder> parent,
-  }) {
-    return PositiveInt.of.option(field).map((vField) => TestBuilder(
-          field: vField,
-          parent: parent,
-        ));
-  }
+  final T parent;
 
   @override
-  Option<TestParams> build() {
-    return field.flatMap((vField) => parent
-        .flatMap<TestParams>((vParent) => vParent.build())
-        .map((vParent) => TestParams(
-              field: vField,
-              parent: vParent,
-            )));
-  }
+  List<Object?> get props => [parent];
+}
+
+final class ModelFieldFailureId
+    extends ModelFieldFailure<GenericValueFailure<int>> {
+  const ModelFieldFailureId(super.parent);
+}
+
+final class ModelFieldFailureField
+    extends ModelFieldFailure<GenericValueFailure<int>> {
+  const ModelFieldFailureField(super.parent);
+}
+
+final class ModelFieldFailureParent
+    extends ModelFieldFailure<Nel<ModelFieldFailure>> {
+  const ModelFieldFailureParent(super.parent);
 }
 ''',
 )
-@ModelTemplate('Test')
-abstract class TestModel {
-  @extern
-  PositiveInt get id;
+@Validatable()
+final class Model {
+  final PositiveInt id;
+  final PositiveInt field;
+  final Model parent;
 
-  PositiveInt get field;
-
-  TestModel get parent;
+  const Model({required this.id, required this.field, required this.parent});
 }

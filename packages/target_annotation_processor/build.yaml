@@ -5,5 +5,3 @@ builders:
     build_extensions: { ".dart": [ ".core.dart" ] }
     auto_apply: dependents
     build_to: source
-    runs_before: [ "freezed|freezed" ]
-    applies_builders: [ "freezed|freezed" ]
