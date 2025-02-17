@@ -1,3 +1,10 @@
+## 0.9.0
+
+#### Breaking Changes:
+
+- Require Dart SDK `>=3.6.0 <4.0.0`.
+- Upgrade `source_gen` dependency to 2.0.0.
+
 ## 0.8.1
 
 Fixes:
@@ -9,8 +16,8 @@ Fixes:
 #### Breaking Changes:
 
 - New `target_annotation_processor` paradigm centered around the `Validatable` annotation.
-  - Removed dependency on `freezed`.
-  - Validation function, named `_$of`, is generated based on unnamed constructor arguments.
+    - Removed dependency on `freezed`.
+    - Validation function, named `_$of`, is generated based on unnamed constructor arguments.
 
 Before:
 
@@ -27,7 +34,7 @@ After:
 @validatable
 class Some {
   const Some(/* fields */);
-  
+
   static const of = _$of;
 }
 ```
@@ -37,9 +44,10 @@ Freezed data classes still work:
 ```dart
 @freezed
 @validatable
-class Some with _$Some {
+class Some
+    with _$Some {
   const factory Some(/* fields */) = _Some;
-  
+
   static const of = _$of;
 }
 ```

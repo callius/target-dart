@@ -36,7 +36,7 @@ final class NonEmptyList<T> extends DelegatingList<T> {
   /// value, followed by accumulating the value with the tail using the
   /// [operation].
   ///
-  /// ```
+  /// ```dart
   /// final numbers = [1, 2, 3].toNonEmptyListOrNull()!;
   /// final six = numbers.foldWithHead((it) => it, (acc, it) => acc + it);
   /// ```

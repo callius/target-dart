@@ -79,6 +79,7 @@ void main() {
       const testFailure = 'failure';
 
       final result = either<String, Unit>((r) {
+        // Nullable unit declaration for test.
         // ignore: unnecessary_nullable_for_final_variable_declarations
         const Unit? maybeUnit = unit;
         return r.ensureNotNull(maybeUnit, () => testFailure);

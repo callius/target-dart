@@ -1,4 +1,4 @@
 /// Functional domain modeling in [Dart](https://dart.dev).
-library target_annotation;
+library;
 
 export 'src/validatable.dart';

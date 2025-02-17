@@ -94,6 +94,7 @@ extension TargetNullableTypeToEitherX<R> on R? {
     if (this == null) {
       return Left(ifNull());
     } else {
+      // This is never null.
       // ignore: null_check_on_nullable_type_parameter
       return Right(this!);
     }
