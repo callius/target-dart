@@ -19,20 +19,20 @@ Either<Nel<ModelFieldFailure>, Model> _$of({
   if (vId is Right<GenericValueFailure<int>, Option<PositiveInt>> &&
       vField is Right<GenericValueFailure<int>, PositiveInt> &&
       parent is Right<Nel<ModelFieldFailure>, Model>) {
-    return Right(Model(
-      id: vId.value,
-      field: vField.value,
-      parent: parent.value,
-    ));
+    return Right(
+      Model(id: vId.value, field: vField.value, parent: parent.value),
+    );
   } else {
-    return Left(Nel.fromListUnsafe([
-      if (vId is Left<GenericValueFailure<int>, Option<PositiveInt>>)
-        ModelFieldFailureId(vId.value),
-      if (vField is Left<GenericValueFailure<int>, PositiveInt>)
-        ModelFieldFailureField(vField.value),
-      if (parent is Left<Nel<ModelFieldFailure>, Model>)
-        ModelFieldFailureParent(parent.value),
-    ]));
+    return Left(
+      Nel.fromListUnsafe([
+        if (vId is Left<GenericValueFailure<int>, Option<PositiveInt>>)
+          ModelFieldFailureId(vId.value),
+        if (vField is Left<GenericValueFailure<int>, PositiveInt>)
+          ModelFieldFailureField(vField.value),
+        if (parent is Left<Nel<ModelFieldFailure>, Model>)
+          ModelFieldFailureParent(parent.value),
+      ]),
+    );
   }
 }
 
