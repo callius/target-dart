@@ -1,6 +1,6 @@
 name: target_annotation
 description: Functional domain modeling in Dart.
-version: 0.8.1
+version: 0.9.0
 repository: https://github.com/callius/target-dart/tree/main/packages/target_annotation
 issue_tracker: https://github.com/callius/target-dart/issues
 homepage: https://github.com/callius/target-dart
