@@ -1,3 +1,9 @@
+## 0.9.1
+
+Fixes:
+
+- Upgrade `analyzer` dependency to `>=7.0.0 <8.0.0`.
+
 ## 0.9.0
 
 #### Breaking Changes:
