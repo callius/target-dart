@@ -1,5 +1,5 @@
 /// Extensions for functional domain modeling in Dart.
-library target_extension;
+library;
 
 export 'src/build_list.dart';
 export 'src/build_map.dart';

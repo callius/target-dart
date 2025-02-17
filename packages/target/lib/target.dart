@@ -1,5 +1,5 @@
 /// Functional domain modeling in [Dart](https://dart.dev).
-library target;
+library;
 
 export 'src/buildable.dart';
 export 'src/generic_value_failure.dart';
