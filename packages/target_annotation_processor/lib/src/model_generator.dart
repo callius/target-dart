@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
@@ -16,20 +16,17 @@ import 'package:target_annotation_processor/src/core/generate_of_spec.dart';
 import 'package:target_annotation_processor/src/core/references.dart';
 import 'package:target_extension/target_extension.dart';
 
-final _emitter = DartEmitter(
-  orderDirectives: true,
-  useNullSafetySyntax: true,
-);
+final _emitter = DartEmitter(orderDirectives: true, useNullSafetySyntax: true);
 
 class ModelGenerator extends GeneratorForAnnotation<Validatable> {
   @override
   FutureOr<String> generateForAnnotatedElement(
-    Element element,
+    Element2 element,
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
     // Checking for a class.
-    if (element is! ClassElement) {
+    if (element is! ClassElement2) {
       final elementName = element.displayName;
       throw InvalidGenerationSourceError(
         'Generator cannot target `$elementName`, as it is not an abstract '
@@ -38,19 +35,24 @@ class ModelGenerator extends GeneratorForAnnotation<Validatable> {
       );
     }
 
+    final fragment = element.firstFragment;
+
     // Checking for an unnamed constructor.
-    final ctor = element.constructors.firstWhereOrNull((it) => it.name.isEmpty);
+    final ctor = fragment.constructors2.firstWhereOrNull(
+      (it) => it.name2 == 'new',
+    );
     if (ctor == null) {
       final friendlyName = element.displayName;
+      final ctorNames = fragment.constructors2.map((it) => it.name2);
       throw InvalidGenerationSourceError(
         'Generator cannot target `$friendlyName`, as it does not define an '
-        'unnamed constructor.',
+        'unnamed constructor. Constructors found: $ctorNames',
         todo: 'Define an unnamed constructor for `$friendlyName`.',
       );
     }
 
     // Finding all constructor parameters.
-    final parameters = ctor.parameters;
+    final parameters = ctor.formalParameters;
 
     // Checking for at least one parameter.
     if (parameters.isEmpty) {
@@ -64,9 +66,9 @@ class ModelGenerator extends GeneratorForAnnotation<Validatable> {
 
     // Creating type references.
     final failureReference = TypeReference(
-      (it) => it..symbol = '${element.name}FieldFailure',
+      (it) => it..symbol = '${fragment.name2}FieldFailure',
     );
-    final modelReference = Reference(element.name);
+    final modelReference = Reference(fragment.name2);
 
     // Creating model properties.
     final modelProperties = _generateModelProperties(
@@ -76,32 +78,35 @@ class ModelGenerator extends GeneratorForAnnotation<Validatable> {
 
     // Generating model.
     return Library(
-      (it) => it
-        ..comments.add('Generated code. Do not modify by hand.')
-        ..ignoreForFile
-            .addAll(const ['require_trailing_commas', 'unused_element'])
-        ..body.addAll([
-          generateOfSpec(
-            modelReference: modelReference,
-            fieldFailureReference: failureReference,
-            modelProperties: modelProperties,
-          ),
-          ...generateFieldFailureSpecs(
-            fieldFailureReference: failureReference,
-            modelProperties: modelProperties,
-          ),
-        ]),
+      (it) =>
+          it
+            ..comments.add('Generated code. Do not modify by hand.')
+            ..ignoreForFile.addAll(const [
+              'require_trailing_commas',
+              'unused_element',
+            ])
+            ..body.addAll([
+              generateOfSpec(
+                modelReference: modelReference,
+                fieldFailureReference: failureReference,
+                modelProperties: modelProperties,
+              ),
+              ...generateFieldFailureSpecs(
+                fieldFailureReference: failureReference,
+                modelProperties: modelProperties,
+              ),
+            ]),
     ).accept(_emitter).toString();
   }
 
   List<ModelProperty> _generateModelProperties({
     required Reference failureReference,
-    required Iterable<ParameterElement> parameters,
+    required Iterable<FormalParameterFragment> parameters,
   }) {
     return parameters
         .map(
           (it) => ModelProperty(
-            name: it.name,
+            name: it.name2!,
             type: _resolveModelPropertyType(failureReference, it),
           ),
         )
@@ -110,36 +115,39 @@ class ModelGenerator extends GeneratorForAnnotation<Validatable> {
 
   ModelPropertyType _resolveModelPropertyType(
     Reference failureReference,
-    ParameterElement parameter,
+    FormalParameterFragment parameter,
   ) {
-    final type = parameter.type;
+    final parameterElement = parameter.element;
+
+    final type = parameterElement.type;
     if (type is! InterfaceType) {
       return _standardModelPropertyType(type);
     }
 
     // Finding option parameters.
-    final typeElement = type.element;
-    if (typeElement.name == kOptionRef.symbol) {
+    final typeElement = type.element3;
+    if (typeElement.firstFragment.name2 == kOptionRef.symbol) {
       final optionValueType = type.typeArguments.first;
       if (optionValueType is InterfaceType) {
-        final optionValueTypeElement = optionValueType.element;
+        final optionValueTypeElement = optionValueType.element3;
         // Finding model template option.
-        if (optionValueType.element.metadata.containsValidatable()) {
+        if (optionValueType.element3.metadata2.annotations
+            .containsValidatable()) {
           return _resolveValidatableProperties(
             failureReference: failureReference,
             parameter: parameter,
             modelType: optionValueType,
-            resolve: (
-              modelTypeReference,
-              parentFieldFailureType,
-              fieldFailureType,
-            ) =>
-                ModelPropertyType.modelTemplateOption(
-              type: type.toTypeReference(),
-              modelType: modelTypeReference,
-              parentFieldFailureType: parentFieldFailureType,
-              fieldFailureType: fieldFailureType,
-            ),
+            resolve:
+                (
+                  modelTypeReference,
+                  parentFieldFailureType,
+                  fieldFailureType,
+                ) => ModelPropertyType.modelTemplateOption(
+                  type: type.toTypeReference(),
+                  modelType: modelTypeReference,
+                  parentFieldFailureType: parentFieldFailureType,
+                  fieldFailureType: fieldFailureType,
+                ),
           );
         }
 
@@ -153,40 +161,38 @@ class ModelGenerator extends GeneratorForAnnotation<Validatable> {
             valueObjectType: optionValueType,
             valueObjectElement: optionValueTypeElement,
             valueObjectInterfaceType: valueObjectInterfaceType,
-            resolve: (
-              valueObjectType,
-              valueObjectValueType,
-              valueFailureType,
-              fieldFailureType,
-            ) =>
-                ModelPropertyType.valueObjectOption(
-              type: type.toTypeReference(),
-              valueObjectType: valueObjectType,
-              valueObjectValueType: valueObjectValueType,
-              valueFailureType: valueFailureType,
-              fieldFailureType: fieldFailureType,
-            ),
+            resolve:
+                (
+                  valueObjectType,
+                  valueObjectValueType,
+                  valueFailureType,
+                  fieldFailureType,
+                ) => ModelPropertyType.valueObjectOption(
+                  type: type.toTypeReference(),
+                  valueObjectType: valueObjectType,
+                  valueObjectValueType: valueObjectValueType,
+                  valueFailureType: valueFailureType,
+                  fieldFailureType: fieldFailureType,
+                ),
           );
         }
       }
     }
 
-    final isValidatable = typeElement.metadata.containsValidatable();
+    final isValidatable =
+        typeElement.metadata2.annotations.containsValidatable();
     if (isValidatable) {
       return _resolveValidatableProperties(
         failureReference: failureReference,
         parameter: parameter,
         modelType: type,
-        resolve: (
-          modelTypeReference,
-          parentFieldFailureType,
-          fieldFailureType,
-        ) =>
-            ModelPropertyType.modelTemplate(
-          type: modelTypeReference,
-          parentFieldFailureType: parentFieldFailureType,
-          fieldFailureType: fieldFailureType,
-        ),
+        resolve:
+            (modelTypeReference, parentFieldFailureType, fieldFailureType) =>
+                ModelPropertyType.modelTemplate(
+                  type: modelTypeReference,
+                  parentFieldFailureType: parentFieldFailureType,
+                  fieldFailureType: fieldFailureType,
+                ),
       );
     }
 
@@ -200,18 +206,18 @@ class ModelGenerator extends GeneratorForAnnotation<Validatable> {
         valueObjectType: type,
         valueObjectElement: typeElement,
         valueObjectInterfaceType: valueObjectInterfaceType,
-        resolve: (
-          valueObjectType,
-          valueObjectValueType,
-          valueFailureType,
-          fieldFailureType,
-        ) =>
-            ModelPropertyType.valueObject(
-          type: valueObjectType,
-          valueObjectValueType: valueObjectValueType,
-          valueFailureType: valueFailureType,
-          fieldFailureType: fieldFailureType,
-        ),
+        resolve:
+            (
+              valueObjectType,
+              valueObjectValueType,
+              valueFailureType,
+              fieldFailureType,
+            ) => ModelPropertyType.valueObject(
+              type: valueObjectType,
+              valueObjectValueType: valueObjectValueType,
+              valueFailureType: valueFailureType,
+              fieldFailureType: fieldFailureType,
+            ),
       );
     }
 
@@ -220,21 +226,24 @@ class ModelGenerator extends GeneratorForAnnotation<Validatable> {
 
   ModelPropertyType _resolveValidatableProperties({
     required Reference failureReference,
-    required ParameterElement parameter,
+    required FormalParameterFragment parameter,
     required DartType modelType,
     required ModelPropertyType Function(
       TypeReference modelTypeReference,
       TypeReference parentFieldFailureType,
       TypeReference fieldFailureType,
-    ) resolve,
+    )
+    resolve,
   }) {
     final modelTypeReference = modelType.toTypeReference();
     return resolve(
       modelTypeReference,
       TypeReference(
-        (it) => it
-          ..symbol = modelType.element!.name!.appendFieldFailure()
-          ..url = modelTypeReference.url,
+        (it) =>
+            it
+              ..symbol =
+                  modelType.element3!.firstFragment.name2!.appendFieldFailure()
+              ..url = modelTypeReference.url,
       ),
       _getFieldFailureType(failureReference, parameter),
     );
@@ -242,21 +251,21 @@ class ModelGenerator extends GeneratorForAnnotation<Validatable> {
 
   ModelPropertyType _resolveValueObjectProperties({
     required Reference failureReference,
-    required ParameterElement parameter,
+    required FormalParameterFragment parameter,
     required DartType valueObjectType,
-    required InterfaceElement valueObjectElement,
+    required InterfaceElement2 valueObjectElement,
     required InterfaceType valueObjectInterfaceType,
     required ModelPropertyType Function(
       TypeReference valueObjectType,
       TypeReference valueObjectValueType,
       TypeReference valueFailureType,
       TypeReference fieldFailureType,
-    ) resolve,
+    )
+    resolve,
   }) {
     // Finding the value validator field.
-    final valueValidatorField = valueObjectElement.children.firstWhereOrNull(
-      (it) => it.name == 'of' && it is FieldElement && it.isStatic,
-    ) as FieldElement?;
+    final valueValidatorField = valueObjectElement.firstFragment.fields2
+        .firstWhereOrNull((it) => it.name2 == 'of' && it.element.isStatic);
     if (valueValidatorField == null) {
       final displayName = valueObjectElement.displayName;
       throw InvalidGenerationSourceError(
@@ -267,9 +276,9 @@ class ModelGenerator extends GeneratorForAnnotation<Validatable> {
 
     // Finding the value failure type.
     final valueFailureType =
-        (valueValidatorField.type.element! as InterfaceElement)
+        (valueValidatorField.element.type.element3! as InterfaceElement2)
             .allSupertypes
-            .firstWhere((it) => kValidatorChecker.isExactly(it.element))
+            .firstWhere((it) => kValidatorChecker.isExactly(it.element3))
             .typeArguments[1]
             .toTypeReference();
 
@@ -287,18 +296,16 @@ class ModelGenerator extends GeneratorForAnnotation<Validatable> {
   }
 
   ModelPropertyType _standardModelPropertyType(DartType type) {
-    return ModelPropertyType.standard(
-      type: type.toTypeReference(),
-    );
+    return ModelPropertyType.standard(type: type.toTypeReference());
   }
 
   TypeReference _getFieldFailureType(
     Reference parent,
-    ParameterElement parameter,
+    FormalParameterFragment parameter,
   ) {
     return TypeReference(
       (it) =>
-          it..symbol = '${parent.symbol}${parameter.name.capitalizeFirst()}',
+          it..symbol = '${parent.symbol}${parameter.name2!.capitalizeFirst()}',
     );
   }
 }
@@ -314,11 +321,14 @@ extension on DartType {
 
   TypeReference toTypeReference({bool? isNullable}) {
     return TypeReference(
-      (it) => it
-        ..symbol = getDisplayString().withoutTrailingQuestionMark()
-        ..isNullable =
-            isNullable ?? nullabilitySuffix == NullabilitySuffix.question
-        ..url = _nullWhenDartUrl(element?.source?.uri.toString()),
+      (it) =>
+          it
+            ..symbol = getDisplayString().withoutTrailingQuestionMark()
+            ..isNullable =
+                isNullable ?? nullabilitySuffix == NullabilitySuffix.question
+            ..url = _nullWhenDartUrl(
+              element3?.firstFragment.libraryFragment?.source.uri.toString(),
+            ),
     );
   }
 }
@@ -345,10 +355,9 @@ extension on List<ElementAnnotation> {
   bool containsValidatable() {
     return any(
       (it) =>
-          it
-              .computeConstantValue()
-              ?.type
-              ?.let(kValidatableChecker.isExactlyType) ==
+          it.computeConstantValue()?.type?.let(
+            kValidatableChecker.isExactlyType,
+          ) ==
           true,
     );
   }
@@ -356,8 +365,6 @@ extension on List<ElementAnnotation> {
 
 extension on List<InterfaceType> {
   InterfaceType? findValueObject() {
-    return firstWhereOrNull(
-      (it) => kValueObjectChecker.isExactly(it.element),
-    );
+    return firstWhereOrNull((it) => kValueObjectChecker.isExactly(it.element3));
   }
 }

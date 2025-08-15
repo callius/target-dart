@@ -1,12 +1,12 @@
 name: target_extension
 description: Extensions for functional domain modeling in Dart.
-version: 0.9.1
+version: 0.10.0
 repository: https://github.com/callius/target-dart/tree/main/packages/target_extension
 issue_tracker: https://github.com/callius/target-dart/issues
 homepage: https://github.com/callius/target-dart
 
 environment:
-  sdk: '>=3.6.0 <4.0.0'
+  sdk: '>=3.7.0 <4.0.0'
 
 dependencies:
   collection: ^1.19.0
@@ -15,8 +15,8 @@ dependencies:
     git:
       url: https://github.com/callius/target-dart
       path: packages/target
-      ref: v0.9.1
+      ref: v0.10.0
 
 dev_dependencies:
-  lint: ^2.6.1
+  lint: ^2.8.0
   test: null
