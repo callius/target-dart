@@ -176,9 +176,10 @@ void main() {
   });
 
   group('Either.bindTo', () {
-    test('returns left when left', () async {
-      const testLeft =
-          Left<GenericValueFailure<Unit>, Unit>(GenericValueFailure(unit));
+    test('returns left when left', () {
+      const testLeft = Left<GenericValueFailure<Unit>, Unit>(
+        GenericValueFailure(unit),
+      );
 
       final result = either<ValueFailure<Unit>, Unit>((r) {
         testLeft.bindTo(r);
