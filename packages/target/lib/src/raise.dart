@@ -3,14 +3,14 @@ import 'package:target/src/either.dart';
 import 'package:target/src/raise_fold.dart';
 
 /// Implementation of arrow-kt raise dsl.
-abstract interface class Raise<Error> {
-  Never raise(Error r);
+abstract interface class Raise<E> {
+  Never raise(E r);
 }
 
-final class RaiseCancellationException<Error> extends Equatable
+final class RaiseCancellationException<E> extends Equatable
     implements Exception {
-  final Error raised;
-  final Raise<Error> raise;
+  final E raised;
+  final Raise<E> raise;
 
   const RaiseCancellationException({required this.raised, required this.raise});
 
@@ -25,20 +25,18 @@ final class RaiseLeakedError extends StateError {
       );
 }
 
-A recover<Error, A>(
-  A Function(Raise<Error>) block,
-  A Function(Error) recover,
-) => fold(block, (it) => throw it, recover, (it) => it);
+A recover<E, A>(A Function(Raise<E>) block, A Function(E) recover) =>
+    fold(block, (it) => throw it, recover, (it) => it);
 
-Future<A> recoverAsync<Error, A>(
-  Future<A> Function(Raise<Error>) block,
-  A Function(Error) recover,
+Future<A> recoverAsync<E, A>(
+  Future<A> Function(Raise<E>) block,
+  A Function(E) recover,
 ) => foldAsync(block, (it) => throw it, recover, (it) => it);
 
-extension RaiseEnsureExtension<Error> on Raise<Error> {
-  A bind<A, E extends Error>(Either<E, A> r) => r.fold(raise, (it) => it);
+extension RaiseEnsureExtension<E> on Raise<E> {
+  A bind<A, E2 extends E>(Either<E2, A> r) => r.fold(raise, (it) => it);
 
-  void ensure(bool condition, Error Function() raise) {
+  void ensure(bool condition, E Function() raise) {
     if (!condition) {
       this.raise(raise());
     }

@@ -5,14 +5,13 @@ import 'package:target/src/raise_fold.dart';
 
 /// DSL for computing an [Either] from the given effect [block]. Based on the
 /// arrow-kt implementation.
-Either<Error, A> either<Error, A>(A Function(Raise<Error> r) block) =>
+Either<E, A> either<E, A>(A Function(Raise<E> r) block) =>
     foldOrThrow(block, Left.new, Right.new);
 
 /// DSL for computing an [Either] async from the given effect [block]. Based on
 /// the arrow-kt implementation.
-Future<Either<Error, A>> eitherAsync<Error, A>(
-  Future<A> Function(Raise<Error> r) block,
-) => foldOrThrowAsync(block, Left.new, Right.new);
+Future<Either<E, A>> eitherAsync<E, A>(Future<A> Function(Raise<E> r) block) =>
+    foldOrThrowAsync(block, Left.new, Right.new);
 
 /// DSL for computing a nullable from the given effect [block]. Based on the
 /// arrow-kt implementation.
