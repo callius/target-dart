@@ -15,6 +15,12 @@ sealed class Either<L, R> {
     _ => throw EitherCaseError(this),
   };
 
+  Either<L, R2> flatMap<R2>(Either<L, R2> Function(R) map) => switch (this) {
+    Left() => this as Left<L>,
+    Right(value: final value) => map(value),
+    _ => throw EitherCaseError(this),
+  };
+
   R getOrElse(R Function(L) onLeft) => fold(onLeft, (it) => it);
 
   R? getOrNull() => fold((_) => null, (it) => it);

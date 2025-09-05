@@ -7,6 +7,8 @@ sealed class Option<T> {
 
   Option<R> map<R>(R Function(T) onSome);
 
+  Option<R> flatMap<R>(Option<R> Function(T) onSome);
+
   T getOrElse(T Function() onNone) => fold(onNone, (it) => it);
 
   T? getOrNull() => fold(() => null, (it) => it);
@@ -28,6 +30,9 @@ final class None extends Option<Never> {
 
   @override
   Option<R> map<R>(R Function(Never) onSome) => this;
+
+  @override
+  Option<R> flatMap<R>(Option<R> Function(Never) onSome) => this;
 
   @override
   bool isNone() => true;
@@ -61,6 +66,9 @@ final class Some<T> extends Option<T> {
 
   @override
   Option<R> map<R>(R Function(T) onSome) => Some(onSome(value));
+
+  @override
+  Option<R> flatMap<R>(Option<R> Function(T) onSome) => onSome(value);
 
   @override
   bool isNone() => false;
