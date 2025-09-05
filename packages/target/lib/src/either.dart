@@ -23,7 +23,7 @@ sealed class Either<L, R> {
 
   R getOrElse(R Function(L) onLeft) => fold(onLeft, (it) => it);
 
-  R? getOrNull() => fold((_) => null, (it) => it);
+  R? getOrNull();
 
   Either<R, L> swap() => fold(Right.new, Left.new);
 
@@ -45,6 +45,9 @@ final class Left<L> extends Either<L, Never> {
   T fold<T>(T Function(L) onLeft, T Function(Never) onRight) => onLeft(value);
 
   @override
+  Null getOrNull() => null;
+
+  @override
   bool isLeft() => true;
 
   @override
@@ -60,9 +63,7 @@ final class Left<L> extends Either<L, Never> {
   Either<L, Never> onRight(void Function(Never) onRight) => this;
 
   @override
-  bool operator ==(Object other) {
-    return other is Left<L> && value == other.value;
-  }
+  bool operator ==(Object other) => other is Left<L> && value == other.value;
 
   @override
   int get hashCode => value.hashCode;
@@ -75,6 +76,12 @@ final class Right<R> extends Either<Never, R> {
 
   @override
   T fold<T>(T Function(Never) onLeft, T Function(R) onRight) => onRight(value);
+
+  @override
+  R getOrElse(R Function(Never) onLeft) => value;
+
+  @override
+  R getOrNull() => value;
 
   @override
   bool isLeft() => false;
@@ -92,9 +99,7 @@ final class Right<R> extends Either<Never, R> {
   }
 
   @override
-  bool operator ==(Object other) {
-    return other is Right<R> && value == other.value;
-  }
+  bool operator ==(Object other) => other is Right<R> && value == other.value;
 
   @override
   int get hashCode => value.hashCode;
