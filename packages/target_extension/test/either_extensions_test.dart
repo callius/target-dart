@@ -1,31 +1,26 @@
-import 'package:dartz/dartz.dart';
 import 'package:target/target.dart';
 import 'package:target_extension/src/target_either_extensions.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
 void main() {
-  group('Future<Either>.thenBind', () {
-    test('returns left when left', () async {
-      const testLeft =
-          Left<GenericValueFailure<Unit>, Unit>(GenericValueFailure(unit));
-
-      final result = await eitherAsync<ValueFailure<Unit>, Unit>(
-        (r) => Future<Either<GenericValueFailure<Unit>, Unit>>.value(testLeft)
-            .thenBind(r),
+  group('Either.toOption', () {
+    test('returns none when left', () {
+      const testLeft = Left<GenericValueFailure<Unit>>(
+        GenericValueFailure(unit),
       );
 
-      expect(result, testLeft);
+      final result = testLeft.toOption();
+
+      expect(result, const None());
     });
 
-    test('returns right when right', () async {
-      const testRight = Right<String, Unit>(unit);
+    test('returns some when right', () {
+      const testRight = Right<Unit>(unit);
 
-      final result = await eitherAsync<String, Unit>(
-        (r) => Future<Either<String, Unit>>.value(testRight).thenBind(r),
-      );
+      final result = testRight.toOption();
 
-      expect(result, testRight);
+      expect(result, const Some(unit));
     });
   });
 }

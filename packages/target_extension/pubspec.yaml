@@ -10,12 +10,12 @@ environment:
 
 dependencies:
   collection: ^1.19.0
-  dartz: ^0.10.1
   target:
-    git:
-      url: https://github.com/callius/target-dart
-      path: packages/target
-      ref: v0.10.0
+    path: ../target
+#    git:
+#      url: https://github.com/callius/target-dart
+#      path: packages/target
+#      ref: v0.10.0
 
 dev_dependencies:
   lint: ^2.8.0

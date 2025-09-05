@@ -1,4 +1,4 @@
-import 'package:dartz/dartz.dart';
+import 'package:target/src/either.dart';
 import 'package:target/src/generic_value_failure.dart';
 import 'package:target/src/value_object.dart';
 import 'package:target/src/value_validator.dart';

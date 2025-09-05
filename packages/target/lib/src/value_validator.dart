@@ -1,4 +1,5 @@
-import 'package:dartz/dartz.dart';
+import 'package:target/src/either.dart';
+import 'package:target/src/option.dart';
 import 'package:target/src/value_failure.dart';
 import 'package:target/src/value_object.dart';
 

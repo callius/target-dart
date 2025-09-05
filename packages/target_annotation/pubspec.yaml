@@ -10,7 +10,6 @@ environment:
 
 dependencies:
   collection: ^1.19.0
-  dartz: ^0.10.1
 
 dev_dependencies:
   lint: ^2.8.0

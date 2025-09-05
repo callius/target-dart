@@ -1,4 +1,3 @@
-import 'package:dartz/dartz.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:target/target.dart';
 import 'package:target_annotation/target_annotation.dart';
@@ -11,7 +10,7 @@ const kValidatorChecker = TypeChecker.typeNamed(
   ValueValidator,
   inPackage: 'target',
 );
-const kOptionChecker = TypeChecker.typeNamed(Option, inPackage: 'dartz');
+const kOptionChecker = TypeChecker.typeNamed(Option, inPackage: 'target');
 const kValidatableChecker = TypeChecker.typeNamed(
   Validatable,
   inPackage: 'target_annotation',

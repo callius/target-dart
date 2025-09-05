@@ -3,7 +3,6 @@ library;
 
 export 'src/build_list.dart';
 export 'src/build_map.dart';
-export 'src/target_effects.dart';
 export 'src/target_either_extensions.dart';
 export 'src/target_iterable_extensions.dart';
 export 'src/target_option_extensions.dart';
