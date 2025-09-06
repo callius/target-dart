@@ -1,3 +1,4 @@
+import 'package:target/src/either.dart';
 import 'package:target/src/value_object/email_address.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
@@ -31,9 +32,6 @@ void _testValidEmailAddress(String input) {
   test(input, () {
     final result = EmailAddress.of(input);
 
-    expect(
-      result.fold((_) => false, (it) => it.value == input),
-      isTrue,
-    );
+    expect(result.fold((_) => false, (it) => it.value == input), isTrue);
   });
 }

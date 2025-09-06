@@ -1,7 +1,65 @@
 sealed class Either<L, R> {
   const Either();
 
-  T fold<T>(T Function(L) onLeft, T Function(R) onRight);
+  R? getOrNull();
+
+  bool isLeft();
+
+  bool isRight();
+}
+
+final class Left<L> extends Either<L, Never> {
+  const Left(this.value);
+
+  final L value;
+
+  @override
+  Null getOrNull() => null;
+
+  @override
+  bool isLeft() => true;
+
+  @override
+  bool isRight() => false;
+
+  @override
+  bool operator ==(Object other) => other is Left<L> && value == other.value;
+
+  @override
+  int get hashCode => value.hashCode;
+}
+
+final class Right<R> extends Either<Never, R> {
+  const Right(this.value);
+
+  final R value;
+
+  @override
+  R getOrNull() => value;
+
+  @override
+  bool isLeft() => false;
+
+  @override
+  bool isRight() => true;
+
+  @override
+  bool operator ==(Object other) => other is Right<R> && value == other.value;
+
+  @override
+  int get hashCode => value.hashCode;
+}
+
+class EitherCaseError<L, R> extends StateError {
+  EitherCaseError(Either<L, R> parent) : super('invalid case ($parent)');
+}
+
+extension TargetEitherExtensions<L, R> on Either<L, R> {
+  T fold<T>(T Function(L) onLeft, T Function(R) onRight) => switch (this) {
+    Left(value: final value) => onLeft(value),
+    Right(value: final value) => onRight(value),
+    _ => throw EitherCaseError(this),
+  };
 
   Either<L, R2> map<R2>(R2 Function(R) map) => switch (this) {
     Left() => this as Left<L>,
@@ -21,90 +79,29 @@ sealed class Either<L, R> {
     _ => throw EitherCaseError(this),
   };
 
-  R getOrElse(R Function(L) onLeft) => fold(onLeft, (it) => it);
+  R getOrElse(R Function(L) onLeft) => switch (this) {
+    Left(value: final value) => onLeft(value),
+    Right(value: final value) => value,
+    _ => throw EitherCaseError(this),
+  };
 
-  R? getOrNull();
-
-  Either<R, L> swap() => fold(Right.new, Left.new);
-
-  bool isLeft();
-
-  bool isRight();
-
-  Either<L, R> onLeft(void Function(L) onLeft);
-
-  Either<L, R> onRight(void Function(R) onRight);
-}
-
-final class Left<L> extends Either<L, Never> {
-  const Left(this.value);
-
-  final L value;
-
-  @override
-  T fold<T>(T Function(L) onLeft, T Function(Never) onRight) => onLeft(value);
-
-  @override
-  Null getOrNull() => null;
-
-  @override
-  bool isLeft() => true;
-
-  @override
-  bool isRight() => false;
-
-  @override
-  Either<L, Never> onLeft(void Function(L) onLeft) {
-    onLeft(value);
+  Either<L, R> onLeft(void Function(L) onLeft) {
+    if (this is Left<L>) {
+      onLeft((this as Left<L>).value);
+    }
     return this;
   }
 
-  @override
-  Either<L, Never> onRight(void Function(Never) onRight) => this;
-
-  @override
-  bool operator ==(Object other) => other is Left<L> && value == other.value;
-
-  @override
-  int get hashCode => value.hashCode;
-}
-
-final class Right<R> extends Either<Never, R> {
-  const Right(this.value);
-
-  final R value;
-
-  @override
-  T fold<T>(T Function(Never) onLeft, T Function(R) onRight) => onRight(value);
-
-  @override
-  R getOrElse(R Function(Never) onLeft) => value;
-
-  @override
-  R getOrNull() => value;
-
-  @override
-  bool isLeft() => false;
-
-  @override
-  bool isRight() => true;
-
-  @override
-  Either<Never, R> onLeft(void Function(Never p1) onLeft) => this;
-
-  @override
-  Either<Never, R> onRight(void Function(R p1) onRight) {
-    onRight(value);
+  Either<L, R> onRight(void Function(R) onRight) {
+    if (this is Right<R>) {
+      onRight((this as Right<R>).value);
+    }
     return this;
   }
 
-  @override
-  bool operator ==(Object other) => other is Right<R> && value == other.value;
-
-  @override
-  int get hashCode => value.hashCode;
-}
-
-class EitherCaseError<L, R> extends StateError {
-  EitherCaseError(Either<L, R> parent) : super('invalid case ($parent)');
+  Either<R, L> swap() => switch (this) {
+    Left(value: final value) => Right(value),
+    Right(value: final value) => Left(value),
+    _ => throw EitherCaseError(this),
+  };
 }

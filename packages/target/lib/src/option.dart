@@ -3,51 +3,24 @@ Option<T> optionOf<T>(T? value) => value == null ? const None() : Some(value);
 sealed class Option<T> {
   const Option();
 
-  R fold<R>(R Function() onNone, R Function(T) onSome);
-
-  Option<R> map<R>(R Function(T) onSome);
-
-  Option<R> flatMap<R>(Option<R> Function(T) onSome);
-
-  T getOrElse(T Function() onNone) => fold(onNone, (it) => it);
-
-  T? getOrNull() => fold(() => null, (it) => it);
+  T? getOrNull();
 
   bool isNone();
 
   bool isSome();
-
-  Option<T> onNone(void Function() onNone);
-
-  Option<T> onSome(void Function(T) onSome);
 }
 
 final class None extends Option<Never> {
   const None();
 
   @override
-  R fold<R>(R Function() onNone, R Function(Never) onSome) => onNone();
-
-  @override
-  Option<R> map<R>(R Function(Never) onSome) => this;
-
-  @override
-  Option<R> flatMap<R>(Option<R> Function(Never) onSome) => this;
+  Null getOrNull() => null;
 
   @override
   bool isNone() => true;
 
   @override
   bool isSome() => false;
-
-  @override
-  Option<Never> onNone(void Function() onNone) {
-    onNone();
-    return this;
-  }
-
-  @override
-  Option<Never> onSome(void Function(Never p1) onSome) => this;
 
   @override
   bool operator ==(Object other) => other is None;
@@ -62,13 +35,7 @@ final class Some<T> extends Option<T> {
   final T value;
 
   @override
-  R fold<R>(R Function() onNone, R Function(T p1) onSome) => onSome(value);
-
-  @override
-  Option<R> map<R>(R Function(T) onSome) => Some(onSome(value));
-
-  @override
-  Option<R> flatMap<R>(Option<R> Function(T) onSome) => onSome(value);
+  T getOrNull() => value;
 
   @override
   bool isNone() => false;
@@ -77,19 +44,44 @@ final class Some<T> extends Option<T> {
   bool isSome() => true;
 
   @override
-  Option<T> onNone(void Function() onNone) => this;
-
-  @override
-  Option<T> onSome(void Function(T p1) onSome) {
-    onSome(value);
-    return this;
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is Some<T> && value == other.value;
-  }
+  bool operator ==(Object other) => other is Some<T> && value == other.value;
 
   @override
   int get hashCode => value.hashCode;
+}
+
+extension TargetOptionExtensions<T> on Option<T> {
+  R fold<R>(R Function() onNone, R Function(T) onSome) => switch (this) {
+    Some(value: final value) => onSome(value),
+    _ => onNone(),
+  };
+
+  Option<R> map<R>(R Function(T) onSome) => switch (this) {
+    Some(value: final value) => Some(onSome(value)),
+    _ => const None(),
+  };
+
+  Option<R> flatMap<R>(Option<R> Function(T) onSome) => switch (this) {
+    Some(value: final value) => onSome(value),
+    _ => const None(),
+  };
+
+  T getOrElse(T Function() onNone) => switch (this) {
+    Some(value: final value) => value,
+    _ => onNone(),
+  };
+
+  Option<T> onNone(void Function() onNone) {
+    if (this is! Some<T>) {
+      onNone();
+    }
+    return this;
+  }
+
+  Option<T> onSome(void Function(T) onSome) {
+    if (this is Some<T>) {
+      onSome((this as Some<T>).value);
+    }
+    return this;
+  }
 }

@@ -8,6 +8,7 @@ export 'src/length_range.dart';
 export 'src/modelable.dart';
 export 'src/non_empty_list.dart';
 export 'src/option.dart';
+export 'src/pair.dart';
 export 'src/raise.dart';
 export 'src/raise_builders.dart';
 export 'src/raise_fold.dart';
