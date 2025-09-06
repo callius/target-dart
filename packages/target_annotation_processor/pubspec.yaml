@@ -1,6 +1,6 @@
 name: target_annotation_processor
 description: Functional domain modeling in Dart.
-version: 0.10.0
+version: 0.11.0
 repository: https://github.com/callius/target-dart/tree/main/packages/target_annotation_processor
 issue_tracker: https://github.com/callius/target-dart/issues
 homepage: https://github.com/callius/target-dart
@@ -21,19 +21,19 @@ dependencies:
   #    git:
   #      url: https://github.com/callius/target-dart
   #      path: packages/target
-  #      ref: v0.10.0
+  #      ref: v0.11.0
   target_annotation:
     path: ../target_annotation
   #    git:
   #      url: https://github.com/callius/target-dart
   #      path: packages/target_annotation
-  #      ref: v0.10.0
+  #      ref: v0.11.0
   target_extension:
     path: ../target_extension
   #    git:
   #      url: https://github.com/callius/target-dart
   #      path: packages/target_extension
-  #      ref: v0.10.0
+  #      ref: v0.11.0
 
 dev_dependencies:
   build_runner: null
