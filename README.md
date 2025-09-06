@@ -86,15 +86,15 @@ final class EmailAddress extends GenericValueObject<String> {
 This value object can then be used to validate an email address like so:
 
 ```dart
-Future<Either<UserCreateFailure, User>> createUser(UserParamsDto params) {
-  return eitherAsync((r) {
+Future<Either<AccountCreateFailure, Account>> createAccount(AccountParamsDto params) {
+  return eitherAsync((r) async {
     final emailAddress = EmailAddress.of(params.emailAddress)
-        .leftMap(UserCreateFailure.invalidEmailAddress)
-        .let(r.bind);
+        .getOrElse((it) => r.raise(AccountCreateFailure.invalidEmailAddress(it)));
 
     // ... validating other params ...
-    return repositoryCreate(
-      UserParams(
+
+    return await repositoryCreate(
+      AccountParams(
         emailAddress: emailAddress,
         // ... passing other validated params ...
       ),

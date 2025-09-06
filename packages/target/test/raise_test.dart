@@ -1,4 +1,3 @@
-import 'package:dartz/dartz.dart';
 import 'package:target/target.dart';
 import 'package:test/test.dart';
 
@@ -9,14 +8,13 @@ void main() {
 
       final result = either<String, Unit>((r) {
         r.bind(testLeft);
-        return unit;
       });
 
       expect(result, testLeft);
     });
 
     test('returns right when right', () {
-      const testRight = Right<String, Unit>(unit);
+      const testRight = Right<Unit>(unit);
 
       final result = either<String, Unit>((r) {
         return r.bind(testRight);
@@ -36,7 +34,7 @@ void main() {
         }
       });
 
-      expect(result, const Left<String, void>(testFailure));
+      expect(result, const Left<String>(testFailure));
     });
   });
 
@@ -48,7 +46,7 @@ void main() {
         r.ensure(false, () => testFailure);
       });
 
-      expect(result, const Left<String, void>(testFailure));
+      expect(result, const Left<String>(testFailure));
     });
 
     test('returns right when true', () {
@@ -59,33 +57,7 @@ void main() {
         return unit;
       });
 
-      expect(result, const Right<String, Unit>(unit));
-    });
-  });
-
-  group('Raise.ensureNotNull', () {
-    test('returns left when null', () {
-      const testFailure = 'failure';
-
-      final result = either<String, Unit>((r) {
-        const Unit? maybeUnit = null;
-        return r.ensureNotNull(maybeUnit, () => testFailure);
-      });
-
-      expect(result, const Left<String, Unit>(testFailure));
-    });
-
-    test('returns value when not null', () {
-      const testFailure = 'failure';
-
-      final result = either<String, Unit>((r) {
-        // Nullable unit declaration for test.
-        // ignore: unnecessary_nullable_for_final_variable_declarations
-        const Unit? maybeUnit = unit;
-        return r.ensureNotNull(maybeUnit, () => testFailure);
-      });
-
-      expect(result, const Right<String, Unit>(unit));
+      expect(result, const Right<Unit>(unit));
     });
   });
 
@@ -150,53 +122,6 @@ void main() {
       });
 
       expect(result, unit);
-    });
-  });
-
-  group('NullableRaise.ensureNotNull', () {
-    test('returns null when null', () {
-      const testValue = null;
-
-      final result = nullable((r) {
-        return r.ensureNotNull(testValue);
-      });
-
-      expect(result, isNull);
-    });
-
-    test('returns the value when not null', () {
-      const testValue = unit;
-
-      final result = nullable((r) {
-        return r.ensureNotNull(testValue);
-      });
-
-      expect(result, unit);
-    });
-  });
-
-  group('Either.bindTo', () {
-    test('returns left when left', () {
-      const testLeft = Left<GenericValueFailure<Unit>, Unit>(
-        GenericValueFailure(unit),
-      );
-
-      final result = either<ValueFailure<Unit>, Unit>((r) {
-        testLeft.bindTo(r);
-        return unit;
-      });
-
-      expect(result, testLeft);
-    });
-
-    test('returns right when right', () {
-      const testRight = Right<String, Unit>(unit);
-
-      final result = either<String, Unit>((r) {
-        return testRight.bindTo(r);
-      });
-
-      expect(result, testRight);
     });
   });
 }

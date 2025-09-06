@@ -13,27 +13,26 @@ Spec generateOfSpec({
   required List<ModelProperty> modelProperties,
 }) {
   return Method(
-    (fun) => fun
-      ..returns = eitherRef(
-        nelRef(fieldFailureReference),
-        modelReference,
-      )
-      ..name = r'_$of'
-      ..optionalParameters.addAll(
-        modelProperties.map(
-          (prop) => Parameter(
-            (param) => param
-              ..required = true
-              ..named = true
-              ..name = prop.name
-              ..type = _toValueObjectTypeReference(prop.type),
+    (fun) =>
+        fun
+          ..returns = eitherRef(nelRef(fieldFailureReference), modelReference)
+          ..name = r'_$of'
+          ..optionalParameters.addAll(
+            modelProperties.map(
+              (prop) => Parameter(
+                (param) =>
+                    param
+                      ..required = true
+                      ..named = true
+                      ..name = prop.name
+                      ..type = _toValueObjectTypeReference(prop.type),
+              ),
+            ),
+          )
+          ..body = _validateModelProperties(
+            modelReference: modelReference,
+            modelProperties: modelProperties,
           ),
-        ),
-      )
-      ..body = _validateModelProperties(
-        modelReference: modelReference,
-        modelProperties: modelProperties,
-      ),
   );
 }
 
@@ -42,7 +41,7 @@ Code _validateModelProperties({
   required List<ModelProperty> modelProperties,
 }) {
   final List<(ModelProperty, ValidatableModelPropertyType, String)>
-      validatedProperties = [];
+  validatedProperties = [];
   final List<Code> statements = buildList((list) {
     // Validating model properties.
     for (final property in modelProperties) {
@@ -66,9 +65,9 @@ Code _validateModelProperties({
             list.add(
               declareFinal(property.vName)
                   .assign(
-                    propertyType.type
-                        .property('of')
-                        .call([Reference(property.name)]),
+                    propertyType.type.property('of').call([
+                      Reference(property.name),
+                    ]),
                   )
                   .statement,
             );
@@ -108,20 +107,17 @@ Code _validateModelProperties({
           if (propertyType.type.isNullable == true) {
             list.add(
               declareFinal(
-                property.vName,
-                type: _flattenSymbol(
-                  eitherRef(
-                    propertyType.getLeftType(),
-                    propertyType.getRightType(),
-                  ),
-                ),
-              )
+                    property.vName,
+                    type: _flattenSymbol(
+                      eitherRef(
+                        propertyType.getLeftType(),
+                        propertyType.getRightType(),
+                      ),
+                    ),
+                  )
                   .assign(
                     Reference(property.name).ifNullThen(
-                      const InvokeExpression.constOf(
-                        kRightRef,
-                        [literalNull],
-                      ),
+                      const InvokeExpression.constOf(kRightRef, [literalNull]),
                     ),
                   )
                   .statement,
@@ -135,34 +131,31 @@ Code _validateModelProperties({
           if (propertyType.modelType.isNullable == true) {
             list.add(
               declareFinal(
-                property.vName,
-                type: _flattenSymbol(
-                  eitherRef(
-                    propertyType.getLeftType(),
-                    propertyType.getRightType(),
-                  ),
-                ),
-              )
+                    property.vName,
+                    type: _flattenSymbol(
+                      eitherRef(
+                        propertyType.getLeftType(),
+                        propertyType.getRightType(),
+                      ),
+                    ),
+                  )
                   .assign(
                     Reference(property.name).property('fold').call([
                       noParameterLambda(
-                        InvokeExpression.constOf(
-                          kRightRef,
-                          [kNoneRef.call([])],
-                        ),
+                        InvokeExpression.constOf(kRightRef, [
+                          kNoneRef.call([]),
+                        ]),
                       ),
                       singleParameterLambda(
                         '_r',
                         const Reference('_r')
                             .nullSafeProperty('map')
-                            .call([kSomeRef.property('new')]).ifNullThen(
-                          InvokeExpression.constOf(
-                            kRightRef,
-                            [
-                              kSomeRef.call([literalNull]),
-                            ],
-                          ),
-                        ),
+                            .call([kSomeRef.property('new')])
+                            .ifNullThen(
+                              InvokeExpression.constOf(kRightRef, [
+                                kSomeRef.call([literalNull]),
+                              ]),
+                            ),
                       ),
                     ]),
                   )
@@ -171,27 +164,26 @@ Code _validateModelProperties({
           } else {
             list.add(
               declareFinal(
-                property.vName,
-                type: _flattenSymbol(
-                  eitherRef(
-                    propertyType.getLeftType(),
-                    propertyType.getRightType(),
-                  ),
-                ),
-              )
+                    property.vName,
+                    type: _flattenSymbol(
+                      eitherRef(
+                        propertyType.getLeftType(),
+                        propertyType.getRightType(),
+                      ),
+                    ),
+                  )
                   .assign(
                     Reference(property.name).property('fold').call([
                       noParameterLambda(
-                        InvokeExpression.constOf(
-                          kRightRef,
-                          [kNoneRef.call([])],
-                        ),
+                        InvokeExpression.constOf(kRightRef, [
+                          kNoneRef.call([]),
+                        ]),
                       ),
                       singleParameterLambda(
                         '_r',
-                        const Reference('_r')
-                            .property('map')
-                            .call([kSomeRef.property('new')]),
+                        const Reference(
+                          '_r',
+                        ).property('map').call([kSomeRef.property('new')]),
                       ),
                     ]),
                   )
@@ -219,59 +211,59 @@ Code _validateModelProperties({
     } else {
       list.add(
         ifElseStatement(
-          condition: vValidatedProperties
-              .foldWithHead<Expression>(
-                (it) => Reference(it.$3)
-                    .isA(rightRef(it.$2.getLeftType(), it.$2.getRightType())),
-                (acc, it) => acc.and(
-                  Reference(it.$3)
-                      .isA(rightRef(it.$2.getLeftType(), it.$2.getRightType())),
-                ),
-              )
-              .code,
-          onTrue: kRightRef
-              .call([
-                modelReference.call([], {
-                  for (final property in modelProperties)
-                    property.name: vValidatedProperties
-                            .firstWhereOrNull((it) => it.$1 == property)
-                            ?.let((it) => Reference(it.$3).property('value')) ??
-                        Reference(property.name),
-                }),
-              ])
-              .returned
-              .statement,
-          onFalse: kLeftRef
-              .call([
-                kNelRef.property('fromListUnsafe').call([
-                  CodeExpression(
-                    Block.of([
-                      const Code('['),
-                      for (final (_, propertyType, vName)
-                          in vValidatedProperties)
+          condition:
+              vValidatedProperties
+                  .foldWithHead<Expression>(
+                    (it) =>
+                        Reference(it.$3).isA(rightRef(it.$2.getRightType())),
+                    (acc, it) => acc.and(
+                      Reference(it.$3).isA(rightRef(it.$2.getRightType())),
+                    ),
+                  )
+                  .code,
+          onTrue:
+              kRightRef
+                  .call([
+                    modelReference.call([], {
+                      for (final property in modelProperties)
+                        property.name:
+                            vValidatedProperties
+                                .firstWhereOrNull((it) => it.$1 == property)
+                                ?.let(
+                                  (it) => Reference(it.$3).property('value'),
+                                ) ??
+                            Reference(property.name),
+                    }),
+                  ])
+                  .returned
+                  .statement,
+          onFalse:
+              kLeftRef
+                  .call([
+                    kNelRef.property('fromListUnsafe').call([
+                      CodeExpression(
                         Block.of([
-                          const Code('if ('),
-                          Reference(vName)
-                              .isA(
-                                leftRef(
-                                  propertyType.getLeftType(),
-                                  propertyType.getRightType(),
-                                ),
-                              )
-                              .code,
-                          const Code(')'),
-                          propertyType.getFieldFailureType().call([
-                            Reference(vName).property('value'),
-                          ]).code,
-                          const Code(','),
+                          const Code('['),
+                          for (final (_, propertyType, vName)
+                              in vValidatedProperties)
+                            Block.of([
+                              const Code('if ('),
+                              Reference(
+                                vName,
+                              ).isA(leftRef(propertyType.getLeftType())).code,
+                              const Code(')'),
+                              propertyType.getFieldFailureType().call([
+                                Reference(vName).property('value'),
+                              ]).code,
+                              const Code(','),
+                            ]),
+                          const Code(']'),
                         ]),
-                      const Code(']'),
+                      ),
                     ]),
-                  ),
-                ]),
-              ])
-              .returned
-              .statement,
+                  ])
+                  .returned
+                  .statement,
         ),
       );
     }
@@ -282,18 +274,19 @@ Code _validateModelProperties({
 TypeReference _toValueObjectTypeReference(ModelPropertyType type) {
   return switch (type) {
     ValueObjectModelPropertyType() => type.valueObjectValueType,
-    ValueObjectOptionModelPropertyType() =>
-      optionRef(type.valueObjectValueType),
+    ValueObjectOptionModelPropertyType() => optionRef(
+      type.valueObjectValueType,
+    ),
     ModelTemplateModelPropertyType() => eitherRef(
-        nelRef(type.parentFieldFailureType),
-        type.type.toNonNull(),
-      ).withNullability(type.type.isNullable),
+      nelRef(type.parentFieldFailureType),
+      type.type.toNonNull(),
+    ).withNullability(type.type.isNullable),
     ModelTemplateOptionModelPropertyType() => optionRef(
-        eitherRef(
-          nelRef(type.parentFieldFailureType),
-          type.modelType.toNonNull(),
-        ).withNullability(type.modelType.isNullable),
-      ),
+      eitherRef(
+        nelRef(type.parentFieldFailureType),
+        type.modelType.toNonNull(),
+      ).withNullability(type.modelType.isNullable),
+    ),
     StandardModelPropertyType() => type.type,
   };
 }
@@ -326,8 +319,9 @@ String _getParameterizedSymbol(Reference ref) {
         }
         return sb.toString();
       } else {
-        final parameterSymbols =
-            parameters.map((it) => _getParameterizedSymbol(it)).join(',');
+        final parameterSymbols = parameters
+            .map((it) => _getParameterizedSymbol(it))
+            .join(',');
         sb.write('<');
         sb.write(parameterSymbols);
         sb.write('>');

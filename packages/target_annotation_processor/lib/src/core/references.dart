@@ -5,13 +5,11 @@ const kOverrideRef = Reference('override');
 
 const kDynamic = Reference('dynamic');
 
-final kObjectRef = TypeReference(
-  (it) => it..symbol = 'Object',
-);
+final kObjectRef = TypeReference((it) => it..symbol = 'Object');
 
-const kLeftRef = Reference('Left', kDartzPackage);
+const kLeftRef = Reference('Left', kTargetPackage);
 
-const kRightRef = Reference('Right', kDartzPackage);
+const kRightRef = Reference('Right', kTargetPackage);
 
 const kFreezedRef = Reference(
   'freezed',
@@ -19,67 +17,76 @@ const kFreezedRef = Reference(
 );
 
 final kOptionRef = TypeReference(
-  (it) => it
-    ..symbol = 'Option'
-    ..url = kDartzPackage,
+  (it) =>
+      it
+        ..symbol = 'Option'
+        ..url = kTargetPackage,
 );
 
 final kNoneRef = TypeReference(
-  (it) => it
-    ..symbol = 'None'
-    ..url = kDartzPackage,
+  (it) =>
+      it
+        ..symbol = 'None'
+        ..url = kTargetPackage,
 );
 
 final kSomeRef = TypeReference(
-  (it) => it
-    ..symbol = 'Some'
-    ..url = kDartzPackage,
+  (it) =>
+      it
+        ..symbol = 'Some'
+        ..url = kTargetPackage,
 );
 
 final kNelRef = TypeReference(
-  (it) => it
-    ..symbol = 'Nel'
-    ..url = kTargetPackage,
+  (it) =>
+      it
+        ..symbol = 'Nel'
+        ..url = kTargetPackage,
 );
 
 final kEquatableRef = TypeReference(
-  (it) => it
-    ..symbol = 'Equatable'
-    ..url = kEquatablePackage,
+  (it) =>
+      it
+        ..symbol = 'Equatable'
+        ..url = kEquatablePackage,
 );
 
 TypeReference listRef(Reference of) {
   return TypeReference(
-    (it) => it
-      ..symbol = 'List'
-      ..types.add(of),
+    (it) =>
+        it
+          ..symbol = 'List'
+          ..types.add(of),
   );
 }
 
 TypeReference valueFailureRef(Reference of) {
   return TypeReference(
-    (it) => it
-      ..symbol = 'ValueFailure'
-      ..types.add(of)
-      ..url = kTargetPackage,
+    (it) =>
+        it
+          ..symbol = 'ValueFailure'
+          ..types.add(of)
+          ..url = kTargetPackage,
   );
 }
 
 TypeReference buildableRef(Reference of) {
   return TypeReference(
-    (it) => it
-      ..symbol = 'Buildable'
-      ..types.add(of)
-      ..url = kTargetPackage,
+    (it) =>
+        it
+          ..symbol = 'Buildable'
+          ..types.add(of)
+          ..url = kTargetPackage,
   );
 }
 
 TypeReference nelRef(Reference of) {
   return TypeReference(
-    (it) => it
-      ..symbol = 'Nel'
-      ..types.add(of)
-      ..url = kTargetPackage,
+    (it) =>
+        it
+          ..symbol = 'Nel'
+          ..types.add(of)
+          ..url = kTargetPackage,
   );
 }
 
@@ -89,27 +96,30 @@ TypeReference optionRef(Reference of) {
 
 TypeReference eitherRef(Reference left, Reference right) {
   return TypeReference(
-    (it) => it
-      ..symbol = 'Either'
-      ..types.addAll([left, right])
-      ..url = kDartzPackage,
+    (it) =>
+        it
+          ..symbol = 'Either'
+          ..types.addAll([left, right])
+          ..url = kTargetPackage,
   );
 }
 
-TypeReference rightRef(Reference left, Reference right) {
+TypeReference rightRef(Reference right) {
   return TypeReference(
-    (it) => it
-      ..symbol = 'Right'
-      ..types.addAll([left, right])
-      ..url = kDartzPackage,
+    (it) =>
+        it
+          ..symbol = 'Right'
+          ..types.addAll([right])
+          ..url = kTargetPackage,
   );
 }
 
-TypeReference leftRef(Reference left, Reference right) {
+TypeReference leftRef(Reference left) {
   return TypeReference(
-    (it) => it
-      ..symbol = 'Left'
-      ..types.addAll([left, right])
-      ..url = kDartzPackage,
+    (it) =>
+        it
+          ..symbol = 'Left'
+          ..types.addAll([left])
+          ..url = kTargetPackage,
   );
 }

@@ -1,3 +1,48 @@
+## 0.11.0
+
+#### Breaking Changes:
+
+- Removed dependency on `dartz` in favor of own lite fp type implementations: `Either`, `Option`, and `Unit`.
+- Cleaned up DSL for a more idiomatic feel:
+    - Removed `List.traverseEither()`.
+    - Removed `Raise.ensureNotNull()`.
+    - Removed `Either.bindTo()`.
+
+Before:
+
+```dart
+void foo() {
+  either((r) {
+    final result = r.ensureNotNull(
+        repository
+            .findByQuery()
+            .leftMap(FooRepositoryFailure.new)
+            .bindTo(r),
+            () => const FooNotFound()
+    );
+  });
+}
+```
+
+After:
+
+```dart
+void foo() {
+  either((r) {
+    final result = repository
+        .findByQuery()
+        .getOrElse((it) => r.raise(FooRepositoryFailure(it)))
+        ?? r.raise(const FooNotFound());
+  });
+}
+```
+
+## 0.10.0
+
+#### Breaking Changes:
+
+- Support Element2 API.
+
 ## 0.9.1
 
 Fixes:
