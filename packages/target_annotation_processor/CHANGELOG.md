@@ -1,3 +1,10 @@
+## 0.11.1
+
+#### Fixes:
+
+- Typing for `Either` and `Option` functions.
+- Added `Pair` type.
+
 ## 0.11.0
 
 #### Breaking Changes:

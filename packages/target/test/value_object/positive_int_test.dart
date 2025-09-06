@@ -1,3 +1,4 @@
+import 'package:target/src/either.dart';
 import 'package:target/src/value_object/positive_int.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
