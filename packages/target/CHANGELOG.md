@@ -1,3 +1,11 @@
+## 0.12.0
+
+#### Breaking Changes:
+
+- Moved `target_extension` package into core, removed some extensions.
+- Removed concrete `ValueObject` implementations.
+- Broader version ranges for `target_annotion_processor` dependencies.
+
 ## 0.11.1
 
 #### Fixes:
