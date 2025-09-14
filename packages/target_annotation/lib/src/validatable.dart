@@ -19,13 +19,13 @@
 ///   required RawField1 field1,
 /// }) {
 ///   final vField1 = Field1.of(field1);
-///   if (vField1 is Right<Field1Failure, Field1>) {
+///   if (vField1 is Right<Field1>) {
 ///     return Model(
 ///       field1: vField1.value,
 ///     ).right();
 ///   } else {
 ///     return Nel.fromListUnsafe([
-///       if (vField1 is Left<Field1Failure, Field1>)
+///       if (vField1 is Left<Field1Failure>)
 ///         ModelFieldFailureField1(vField1.value),
 ///     ]).left();
 ///   }

@@ -5,7 +5,6 @@ import 'package:target_annotation_processor/src/core/domain/model_property.dart'
 import 'package:target_annotation_processor/src/core/domain/model_property_type.dart';
 import 'package:target_annotation_processor/src/core/functions.dart';
 import 'package:target_annotation_processor/src/core/references.dart';
-import 'package:target_extension/target_extension.dart';
 
 Spec generateOfSpec({
   required Reference modelReference,

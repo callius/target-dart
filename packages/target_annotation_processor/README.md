@@ -72,7 +72,7 @@ class StringRegexValidator<T extends ValueObject<String>>
 }
 ```
 
-The included `EmailAddress` class is an example of an annotation processor compatible `ValueObject` implementation.
+This `EmailAddress` class is an example of an annotation processor compatible `ValueObject` implementation.
 
 ```dart
 /// A W3C HTML5 email address.
@@ -86,17 +86,16 @@ final class EmailAddress extends GenericValueObject<String> {
 This value object can then be used to validate an email address like so:
 
 ```dart
-Future<Either<UserCreateFailure, User>> createUser(UserParamsDto params) {
+Future<Either<AccountCreateFailure, Account>> createAccount(AccountParamsDto params) {
   return eitherAsync((r) {
     final emailAddress = EmailAddress.of(params.emailAddress)
-        .leftMap(UserCreateFailure.invalidEmailAddress)
-        .let(r.bind);
+        .getOrElse((it) => r.raise(AccountCreateFailure.invalidEmailAddress(it)));
 
-    // ... validating other params ...
+    // ... validate other params ...
     return repositoryCreate(
-      UserParams(
+      AccountParams(
         emailAddress: emailAddress,
-        // ... passing other validated params ...
+        // ... pass other validated params ...
       ),
     ).then(r.bind);
   });

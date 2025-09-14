@@ -1,4 +1,4 @@
-import 'package:target_extension/src/build_map.dart';
+import 'package:target/src/build_map.dart';
 
 extension TargetIterableExtensions<T> on Iterable<T> {
   int get lastIndex => length - 1;

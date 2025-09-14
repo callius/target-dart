@@ -1,3 +1,5 @@
+import 'package:target/src/either.dart';
+
 Option<T> optionOf<T>(T? value) => value == null ? const None() : Some(value);
 
 sealed class Option<T> {
@@ -84,4 +86,7 @@ extension TargetOptionExtensions<T> on Option<T> {
     }
     return this;
   }
+
+  Either<L, T> toEither<L>(L Function() onNone) =>
+      fold(() => Left(onNone()), Right.new);
 }

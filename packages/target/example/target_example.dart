@@ -8,3 +8,9 @@ void main() {
   );
   // Prints: Email address is valid: EmailAddress(john.doe@example.com)
 }
+
+final class EmailAddress extends GenericValueObject<String> {
+  static const of = EmailAddressValidator(EmailAddress._);
+
+  const EmailAddress._(super.value);
+}
