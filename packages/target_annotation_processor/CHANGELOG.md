@@ -1,3 +1,9 @@
+## 0.12.0+1
+
+#### Fixes:
+
+- Revert to deprecated `Element2` for `analyzer` compatibility.
+
 ## 0.12.0
 
 #### Breaking Changes:
