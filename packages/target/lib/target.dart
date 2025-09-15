@@ -1,9 +1,12 @@
 /// Functional domain modeling in [Dart](https://dart.dev).
 library;
 
+export 'src/build_list.dart';
+export 'src/build_map.dart';
 export 'src/either.dart';
 export 'src/generic_value_failure.dart';
 export 'src/generic_value_object.dart';
+export 'src/iterable_extensions.dart';
 export 'src/length_range.dart';
 export 'src/modelable.dart';
 export 'src/non_empty_list.dart';
@@ -12,12 +15,11 @@ export 'src/pair.dart';
 export 'src/raise.dart';
 export 'src/raise_builders.dart';
 export 'src/raise_fold.dart';
+export 'src/string_extensions.dart';
+export 'src/type_extensions.dart';
 export 'src/unit.dart';
 export 'src/value_failure.dart';
 export 'src/value_object.dart';
-export 'src/value_object/email_address.dart';
-export 'src/value_object/non_negative_int.dart';
-export 'src/value_object/positive_int.dart';
 export 'src/value_validator.dart';
 export 'src/value_validator/email_address_validator.dart';
 export 'src/value_validator/int_min_value_validator.dart';

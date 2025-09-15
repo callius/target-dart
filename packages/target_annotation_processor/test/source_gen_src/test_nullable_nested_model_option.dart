@@ -70,3 +70,9 @@ final class Model {
 
   const Model({required this.id, required this.field, required this.parent});
 }
+
+final class PositiveInt extends GenericValueObject<int> {
+  static const of = PositiveIntValidator(PositiveInt._);
+
+  const PositiveInt._(super.value);
+}

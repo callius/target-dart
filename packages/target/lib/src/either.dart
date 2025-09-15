@@ -1,3 +1,5 @@
+import 'package:target/src/option.dart';
+
 sealed class Either<L, R> {
   const Either();
 
@@ -85,6 +87,17 @@ extension TargetEitherExtensions<L, R> on Either<L, R> {
     _ => throw EitherCaseError(this),
   };
 
+  /// Applies the given function f if this is a Left, otherwise returns this if
+  /// this is a Right. This is like flatMap for the exception.
+  ///
+  /// Based on the arrow-kt implementation in Kotlin.
+  Either<C, R> handleErrorWith<C>(Either<C, R> Function(L it) f) =>
+      switch (this) {
+        Left(value: final value) => f(value),
+        Right() => this as Right<R>,
+        _ => throw EitherCaseError(this),
+      };
+
   Either<L, R> onLeft(void Function(L) onLeft) {
     if (this is Left<L>) {
       onLeft((this as Left<L>).value);
@@ -104,4 +117,26 @@ extension TargetEitherExtensions<L, R> on Either<L, R> {
     Right(value: final value) => Left(value),
     _ => throw EitherCaseError(this),
   };
+
+  Option<R> toOption() => fold((_) => const None(), Some.new);
+}
+
+extension TargetEitherNullableExtensions<L, R> on Either<L, R>? {
+  /// Returns [Left] when this is null.
+  Either<L?, R> leftIfNull() {
+    if (this == null) {
+      return const Left(null);
+    } else {
+      return this!;
+    }
+  }
+
+  /// Returns [Right] when this is null.
+  Either<L, R?> rightIfNull() {
+    if (this == null) {
+      return const Right(null);
+    } else {
+      return this!;
+    }
+  }
 }

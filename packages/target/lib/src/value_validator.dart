@@ -3,8 +3,11 @@ import 'package:target/src/option.dart';
 import 'package:target/src/value_failure.dart';
 import 'package:target/src/value_object.dart';
 
-abstract class ValueValidator<I extends Object, F extends ValueFailure<I>,
-    T extends ValueObject<I>> {
+abstract class ValueValidator<
+  I extends Object,
+  F extends ValueFailure<I>,
+  T extends ValueObject<I>
+> {
   const ValueValidator();
 
   /// Validates an input.
@@ -21,18 +24,17 @@ abstract class ValueValidator<I extends Object, F extends ValueFailure<I>,
   }
 
   /// Validates an optional input.
-  Either<F, Option<T>> option(Option<I> input) => input.traverseEither(of);
+  Either<F, Option<T>> option(Option<I> input) => input.fold(
+    () => const Right<None>(None()),
+    (it) => of(it).map<Some<T>>(Some.new),
+  );
 
   /// Validates an optional nullable input.
-  Either<F, Option<T?>> nullableOption(Option<I?> input) =>
-      input.traverseEither(nullable);
+  Either<F, Option<T?>> nullableOption(Option<I?> input) => input.fold(
+    () => const Right<None>(None()),
+    (it) => nullable(it).map<Some<T?>>(Some.new),
+  );
 
   /// Makes value validators callable like functions, defaults to [of].
   Either<F, T> call(I input) => of(input);
-}
-
-extension<A> on Option<A> {
-  /// NOTE: dartz does not have a `traverseEither` function.
-  Either<AA, Option<B>> traverseEither<AA, B>(Either<AA, B> Function(A) fa) =>
-      fold(() => const Right(None()), (it) => fa(it).map(Some.new));
 }
