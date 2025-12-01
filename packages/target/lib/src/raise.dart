@@ -41,6 +41,28 @@ extension RaiseEnsureExtension<E> on Raise<E> {
       this.raise(raise());
     }
   }
+
+  /// Catches any exception thrown in the [block] and raises a converted error.
+  R catching<R>(R Function() block, E Function(Exception) convertException) {
+    try {
+      return block();
+    } on Exception catch (e) {
+      raise(convertException(e));
+    }
+  }
+
+  /// Catches any exception thrown in the awaited [block] and raises a converted
+  /// error.
+  Future<R> catchingAsync<R>(
+    Future<R> Function() block,
+    E Function(Exception) convertException,
+  ) async {
+    try {
+      return await block();
+    } on Exception catch (e) {
+      raise(convertException(e));
+    }
+  }
 }
 
 A merge<A>(A Function(Raise<A>) block) => recover<A, A>(block, (it) => it);
