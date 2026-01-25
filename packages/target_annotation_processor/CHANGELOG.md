@@ -1,3 +1,33 @@
+## 0.13.0
+
+#### Features:
+
+- Support for `analyzer: '>=9.0.0 <10.0.0'`.
+- Added `catching()` and `catchingAsync()` to `Raise` DSL extensions allowing for idiomatic exception handling. Brings
+  functionality much like Kotlin's try expressions.
+
+Example:
+
+```dart
+// Before
+Either<String, void> foo() {
+  try {
+    return either((r) {
+      final bar = someThrowableCall();
+    });
+  } on Exception {
+    return Left('Thrown!');
+  }
+}
+
+// After
+Either<String, void> foo() {
+  return either((r) {
+    final bar = r.catching(() => someThrowableCall(), (_) => 'Thrown!');
+  });
+}
+```
+
 ## 0.12.0+1
 
 #### Fixes:

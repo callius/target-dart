@@ -61,6 +61,53 @@ void main() {
     });
   });
 
+  group('Raise.catching', () {
+    test('returns left when thrown', () {
+      const testFailure = 'failure';
+
+      final result = either<String, void>((r) {
+        r.catching(() => throw Exception(), (_) => testFailure);
+      });
+
+      expect(result, const Left<String>(testFailure));
+    });
+
+    test('returns right when success', () {
+      const testFailure = 'failure';
+
+      final result = either<String, Unit>((r) {
+        return r.catching(() => unit, (_) => testFailure);
+      });
+
+      expect(result, const Right<Unit>(unit));
+    });
+  });
+
+  group('Raise.catchingAsync', () {
+    test('returns left when thrown', () async {
+      const testFailure = 'failure';
+
+      final result = await eitherAsync<String, Unit>((r) {
+        return r.catchingAsync(
+          () async => throw Exception(),
+          (_) => testFailure,
+        );
+      });
+
+      expect(result, const Left<String>(testFailure));
+    });
+
+    test('returns right when success', () async {
+      const testFailure = 'failure';
+
+      final result = await eitherAsync<String, Unit>((r) {
+        return r.catchingAsync(() async => unit, (_) => testFailure);
+      });
+
+      expect(result, const Right<Unit>(unit));
+    });
+  });
+
   group('NullableRaise.bind', () {
     test('returns null when Left', () {
       const testEither = Left('failure');
