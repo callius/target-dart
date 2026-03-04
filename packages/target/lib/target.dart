@@ -22,6 +22,7 @@ export 'src/value_failure.dart';
 export 'src/value_object.dart';
 export 'src/value_validator.dart';
 export 'src/value_validator/email_address_validator.dart';
+export 'src/value_validator/int_in_value_objects_validator.dart';
 export 'src/value_validator/int_min_value_validator.dart';
 export 'src/value_validator/int_range_validator.dart';
 export 'src/value_validator/non_negative_int_validator.dart';
