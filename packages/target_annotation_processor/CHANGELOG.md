@@ -1,3 +1,13 @@
+## 0.14.0
+
+#### Features:
+
+- Added `IntInValueObjectsValidator`.
+
+#### Breaking Changes:
+
+- Upgrade `analyzer` dependency to `>=10.0.0 <11.0.0`.
+
 ## 0.13.0
 
 #### Features:
