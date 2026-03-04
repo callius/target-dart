@@ -1,3 +1,9 @@
+## 0.14.1
+
+#### Fixes:
+
+- `IntInValueObjectsValidator` export.
+
 ## 0.14.0
 
 #### Features:
