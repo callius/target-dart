@@ -1,3 +1,9 @@
+## 0.15.0
+
+#### Features:
+
+- Support for `analyzer: '>=10.0.0 <14.0.0'`.
+
 ## 0.14.0
 
 #### Features:
